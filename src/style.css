@@ -103,9 +103,11 @@ body { margin: 0; }
   }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-name {
-    position: absolute; top: 32.5%; left: 50%; transform: translate(-50%, -50%); width: 58%;
-    text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 600; line-height: 1.03;
-    color: #4a3924; word-break: break-word; font-size: clamp(0.95rem, 8.4cqw, 2.3rem);
+    position: absolute; top: 31%; left: 50%; transform: translate(-50%, -50%); width: 72%;
+    text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 600; line-height: 1.08;
+    color: #4a3924; word-break: break-word; font-size: clamp(0.85rem, 6.6cqw, 1.85rem);
+    background: rgba(255,253,248,0.82); padding: 4% 8%; border-radius: 14px;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,0.12);
   }
   .cover-hint {
     position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%);
@@ -116,19 +118,31 @@ body { margin: 0; }
 
   /* ---- Inside page ---- */
   .page {
-    aspect-ratio: 700 / 1050; width: 100%; border-radius: 20px; padding: 9% 9% 7%;
+    aspect-ratio: 700 / 1050; width: 100%; border-radius: 20px; padding: 8% 9% 6%;
     display: flex; flex-direction: column; align-items: center; text-align: center;
     position: relative; overflow: hidden; box-shadow: 0 24px 54px -22px rgba(0,0,0,0.42);
   }
+  .page::before {
+    content: ''; position: absolute; inset: 0; background-image: url(/church.jpg);
+    background-size: cover; background-position: center; opacity: 0.05; z-index: 0;
+  }
+  .page > * { position: relative; z-index: 1; }
   .page .corner { position: absolute; width: 30px; height: 30px; opacity: 0.9; z-index: 2; }
   .page .corner.tl { top: 14px; left: 14px; }
   .page .corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
   .page .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
   .page .corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
 
-  .page .school { display: flex; align-items: center; gap: 6px; margin-bottom: 4%; }
-  .page .school span { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; opacity: 0.9; }
-  .page .school img { width: 15px; height: auto; }
+  .page .school { display: flex; align-items: center; gap: 9px; margin-bottom: 4%; }
+  .page .school span { font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; opacity: 0.92; line-height: 1.25; text-align: left; }
+  .page .school img { width: 34px; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+
+  .page .church-banner {
+    width: 100%; aspect-ratio: 900 / 506; border-radius: 14px; overflow: hidden; margin: 0 0 5%; flex: none;
+    box-shadow: 0 10px 22px -12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.5);
+  }
+  .page .church-banner img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .page .parroquia-logo { width: 100px; height: auto; margin: 0 0 4%; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.16)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; font-weight: 600;
@@ -146,14 +160,15 @@ body { margin: 0; }
   }
   .page .msg::before { content: '“'; }
   .page .msg::after { content: '”'; }
-  .page .spacer { flex: 1; min-height: 8px; }
+  .page .divider-motif { margin: 4% 0; opacity: 0.85; }
+  .page .spacer { flex: 1; min-height: 6px; }
   .page .when { display: flex; flex-direction: column; gap: 3px; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.01em; }
   .page .parroquia { margin: 4% 0 0; font-size: 0.86rem; font-weight: 700; }
   .page .direccion { margin: 1px 0 0; font-size: 0.76rem; opacity: 0.85; }
   .page .padres { margin: 4% 0 0; font-size: 0.72rem; font-style: italic; }
-  .page .footer-logo { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6%; }
-  .page .footer-logo img { width: 18px; height: auto; }
-  .page .footer-logo span { font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+  .page .footer-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6%; }
+  .page .footer-logo img { width: 26px; height: auto; }
+  .page .footer-logo span { font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
 
   .preview-label { text-align: center; }
 
@@ -205,15 +220,33 @@ body { margin: 0; }
   .not-found { min-height: 100dvh; display: grid; place-items: center; padding: 24px; text-align: center; }
 
   /* ---- Book flip effect (modern 3D CSS transform) ---- */
-  .book-wrap { perspective: 2200px; width: 100%; }
-  .book { position: relative; width: 100%; aspect-ratio: 700 / 1050; transform-style: preserve-3d; }
+  .book-wrap {
+    perspective: 2400px; width: 100%; position: relative;
+    filter: drop-shadow(0 26px 30px rgba(20,14,4,0.22)) drop-shadow(0 6px 10px rgba(20,14,4,0.14));
+    transition: filter 1.1s ease;
+  }
+  .book-wrap.is-open { filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18)); }
+  .pages-edge {
+    position: absolute; top: 1.6%; bottom: 1.6%; right: -3px; width: 9px; z-index: 0;
+    background: repeating-linear-gradient(to bottom, #fffdf8 0px, #fffdf8 2px, #e9dcc0 2px, #e9dcc0 3px);
+    border-radius: 0 7px 7px 0; box-shadow: 1px 1px 3px rgba(0,0,0,0.28), inset -1px 0 1px rgba(0,0,0,0.1);
+  }
+  .book { position: relative; width: 100%; aspect-ratio: 700 / 1050; transform-style: preserve-3d; z-index: 1; }
   .book .face {
     position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; overflow: hidden;
-    transition: transform 1.05s cubic-bezier(.45,.05,.15,1), box-shadow 1.05s ease; transform-origin: left center;
+    transition: transform 1.15s cubic-bezier(.4,0,.2,1); transform-origin: left center;
   }
-  .book .face.front { transform: rotateY(0deg); z-index: 2; }
+  .book .face::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.15s ease;
+    background: linear-gradient(90deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.06) 12%, transparent 30%);
+  }
+  .book .face.front {
+    transform: rotateY(0deg); z-index: 2;
+    box-shadow: inset 2px 0 0 rgba(255,255,255,0.5), inset -1px 0 6px rgba(0,0,0,0.12);
+  }
   .book .face.back { transform: rotateY(180deg); }
-  .book.open .face.front { transform: rotateY(-165deg); box-shadow: 30px 0 40px -20px rgba(0,0,0,0.35); }
+  .book.open .face.front { transform: rotateY(-172deg); }
+  .book.open .face.front::after { opacity: 1; }
   .book.open .face.back { transform: rotateY(0deg); z-index: 2; }
   @media (min-width: 640px) { .book-wrap { max-width: 420px; margin: 0 auto; } }
 

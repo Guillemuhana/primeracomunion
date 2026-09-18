@@ -1,7 +1,6 @@
 import './style.css';
 import { toPng } from 'html-to-image';
 
-
   var SCHOOL_NAME = 'Instituto Nuestra Señora de Fátima';
 
   var PALETTE = {
@@ -148,7 +147,11 @@ import { toPng } from 'html-to-image';
 
   // ---------- State ----------
   var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
-  var emptyForm = { nombre: '', fecha: '2026-09-25', hora: '19:00', parroquia: '', direccion: '', padres: '', mensaje: '', genero: '' };
+  var FECHA_EVENTO = '2026-09-25';
+  var HORA_EVENTO = '19:00';
+  var DIRECCION_EVENTO = 'Rufino Varela Ortiz 2600 – B° Matienzo';
+  var PARROQUIA_EVENTO = 'Parroquia Nuestra Señora de Fátima y San Pío V';
+  var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, padres: '', mensaje: '', genero: '' };
   function illusSrc(genero) { return genero === 'nene' ? '/boy.jpg' : '/girl.jpg'; }
   function coverSrc(genero) { return genero === 'nene' ? '/cover-boy.jpg' : '/cover-girl.jpg'; }
   var state = { view: 'intro', form: JSON.parse(JSON.stringify(emptyForm)), shareUrl: '', duplicateNote: '' };
@@ -192,10 +195,13 @@ import { toPng } from 'html-to-image';
       '<div class="corner bl">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner br">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="school"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
+      '<div class="church-banner"><img src="/church.jpg" alt=""/></div>' +
+      '<img class="parroquia-logo" src="/parroquia-logo.png" alt=""/>' +
       '<p class="kicker" style="color:' + t.accentDeep + '"><i style="background:' + t.accent + '"></i>En su Primera Comunión<i style="background:' + t.accent + '"></i></p>' +
       '<h2 class="font-display">' + (esc(data.nombre) || 'Nombre del niño/a') + '</h2>' +
       '<div class="rule"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="' + t.accent + '"/></svg></div>' +
       '<p class="msg font-display">' + esc(mensaje) + '</p>' +
+      '<div class="divider-motif">' + motifSvg('cruz', t.accent, t.accentDeep, 30) + '</div>' +
       '<div class="spacer"></div>' +
       '<div class="when"><span>' + (formatFechaEs(data.fecha) || 'Fecha a confirmar') + '</span>' +
       (data.hora ? '<span style="font-weight:600">' + esc(formatHora(data.hora)) + '</span>' : '') + '</div>' +
@@ -209,7 +215,7 @@ import { toPng } from 'html-to-image';
 
   function bookHTML(id, data) {
     return (
-      '<div class="book-wrap"><div class="book" id="' + id + '">' +
+      '<div class="book-wrap" id="' + id + '-wrap"><div class="pages-edge"></div><div class="book" id="' + id + '">' +
       '<div class="face front">' + coverHTML(data, { hint: 'Toca para abrir' }) + '</div>' +
       '<div class="face back">' + pageHTML(data) + '</div>' +
       '</div></div>'
@@ -218,10 +224,12 @@ import { toPng } from 'html-to-image';
 
   function wireBook(id, onOpen) {
     var book = document.getElementById(id);
+    var wrap = document.getElementById(id + '-wrap');
     if (!book) return;
     book.addEventListener('click', function () {
       var willOpen = !book.classList.contains('open');
       book.classList.toggle('open');
+      if (wrap) wrap.classList.toggle('is-open', willOpen);
       if (willOpen && onOpen) onOpen();
     });
   }
@@ -254,7 +262,7 @@ import { toPng } from 'html-to-image';
   }
 
   function canSubmit() {
-    return state.form.nombre.trim().length > 1 && state.form.fecha && !!state.form.genero;
+    return state.form.nombre.trim().length > 1 && !!state.form.genero;
   }
 
   function renderForm() {
@@ -268,12 +276,7 @@ import { toPng } from 'html-to-image';
       '<button type="button" class="gender-btn' + (f.genero === 'nene' ? ' active' : '') + '" data-genero="nene"><img src="/boy.jpg" alt=""/><span>Nene</span></button>' +
       '</div></div>' +
       field('Tu nombre y apellido *', '<input required id="f-nombre" placeholder="Ej: Valentina Gómez" value="' + esc(f.nombre) + '"/>') +
-      '<div style="display:flex;gap:12px">' +
-      '<label class="field" style="flex:1"><span class="label">Fecha *</span><input required type="date" id="f-fecha" value="' + esc(f.fecha) + '"/></label>' +
-      '<label class="field" style="flex:1"><span class="label">Hora</span><input type="time" id="f-hora" value="' + esc(f.hora) + '"/></label>' +
-      '</div>' +
-      field('Parroquia / Iglesia', '<input id="f-parroquia" placeholder="Ej: Parroquia Nuestra Señora de Fátima" value="' + esc(f.parroquia) + '"/>') +
-      field('Dirección', '<input id="f-direccion" placeholder="Ej: San Martín 450, Córdoba" value="' + esc(f.direccion) + '"/>') +
+      '<p class="note">📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '<br>⛪ ' + esc(PARROQUIA_EVENTO) + '<br>📍 ' + esc(DIRECCION_EVENTO) + '</p>' +
       field('Padres / Padrinos', '<input id="f-padres" placeholder="Ej: Hijos de Juan y María · Padrinos: Ana y Luis" value="' + esc(f.padres) + '"/>') +
       field('Mensaje personalizado', '<textarea id="f-mensaje" rows="3" placeholder="' + esc(DEFAULT_MSG) + '">' + esc(f.mensaje) + '</textarea>') +
       '<div id="form-error" style="color:#a33;font-size:0.85rem"></div>' +
@@ -285,7 +288,7 @@ import { toPng } from 'html-to-image';
     );
     wireBook('preview-book');
 
-    var ids = ['nombre', 'fecha', 'hora', 'parroquia', 'direccion', 'padres', 'mensaje'];
+    var ids = ['nombre', 'padres', 'mensaje'];
     ids.forEach(function (id) {
       var el = document.getElementById('f-' + id);
       el.addEventListener('input', function () {
@@ -294,7 +297,10 @@ import { toPng } from 'html-to-image';
         var wasOpen = !!document.getElementById('preview-book') && document.getElementById('preview-book').classList.contains('open');
         var wrap = document.querySelector('.form-grid > div:last-child');
         wrap.innerHTML = '<p class="label preview-label">Vista previa · tocá la tapa para abrirla</p><div>' + bookHTML('preview-book', state.form) + '</div>';
-        if (wasOpen) document.getElementById('preview-book').classList.add('open');
+        if (wasOpen) {
+          document.getElementById('preview-book').classList.add('open');
+          document.getElementById('preview-book-wrap').classList.add('is-open');
+        }
         wireBook('preview-book');
       });
     });
@@ -314,6 +320,28 @@ import { toPng } from 'html-to-image';
     return '<label class="field"><span class="label">' + label + '</span>' + inputHtml + '</label>';
   }
 
+  // ---------- Registro (Supabase) — para que Guille vea quién usó la app ----------
+  var SUPABASE_URL = 'https://sxfnqucwcteiligdtehq.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4Zm5xdWN3Y3RlaWxpZ2R0ZWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODUzNzYsImV4cCI6MjA5NTk2MTM3Nn0.wULpHXuJ0qE1mVcN2FNvEJBVJ4XT8USXtVmNDVeb16s';
+  function registrarUso(data) {
+    try {
+      fetch(SUPABASE_URL + '/rest/v1/invitaciones_comunion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPABASE_KEY,
+          Authorization: 'Bearer ' + SUPABASE_KEY,
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          nombre_nino: data.nombre, fecha: data.fecha || null, hora: data.hora || null,
+          parroquia: data.parroquia || null, direccion: data.direccion || null,
+          padres: data.padres || null, mensaje: data.mensaje || null, template: data.genero || null,
+        }),
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
   function submitForm() {
     if (!canSubmit()) return;
     var f = state.form;
@@ -327,6 +355,7 @@ import { toPng } from 'html-to-image';
     url.searchParams.set('i', JSON.stringify(data));
     state.shareUrl = url.toString();
     state.view = 'success';
+    registrarUso(data);
     render();
   }
 
@@ -421,7 +450,10 @@ import { toPng } from 'html-to-image';
       '</div></div>';
 
     var book = document.getElementById('invite-book');
-    if (state.opened) book.classList.add('open');
+    if (state.opened) {
+      book.classList.add('open');
+      document.getElementById('invite-book-wrap').classList.add('is-open');
+    }
     wireBook('invite-book', function () {
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
