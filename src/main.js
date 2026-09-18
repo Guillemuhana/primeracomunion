@@ -259,6 +259,10 @@ import { toPng } from 'html-to-image';
       (data.direccion ? '<p class="direccion">' + esc(data.direccion) + '</p>' : '') +
       (data.padres ? '<p class="padres" style="color:' + t.accentDeep + '">' + esc(data.padres) + '</p>' : '') +
       '<div class="footer-logo"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
+      '<span class="shine"></span>' +
+      '<span class="sparkles" aria-hidden="true">' +
+      [1, 2, 3, 4, 5, 6].map(function (n) { return '<i class="sp sp' + n + '" style="background:' + t.accent + '"></i>'; }).join('') +
+      '</span>' +
       '</div>'
     );
   }

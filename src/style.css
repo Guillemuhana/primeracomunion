@@ -248,7 +248,7 @@ body { margin: 0; }
     filter: drop-shadow(0 26px 30px rgba(20,14,4,0.22)) drop-shadow(0 6px 10px rgba(20,14,4,0.14));
     transition: filter 1.1s ease;
   }
-  .book-wrap.is-open { filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18)); }
+  .book-wrap.is-open { filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18)) drop-shadow(0 0 22px rgba(201,162,75,0.34)); }
   .pages-edge {
     position: absolute; top: 1.6%; bottom: 1.6%; right: -3px; width: 9px; z-index: 0;
     background: repeating-linear-gradient(to bottom, #fffdf8 0px, #fffdf8 2px, #e9dcc0 2px, #e9dcc0 3px);
@@ -278,6 +278,55 @@ body { margin: 0; }
   .invite-screen.opened .invite-extra { display: flex; }
   .petal { display: none; }
   .invite-screen.opened .petal { display: block; }
+
+  /* ---- Brillo de la tarjeta abierta ---- */
+  /* Solo se anima bajo .book.open, asi que la imagen descargada sale limpia. */
+  .page .shine {
+    position: absolute; top: -20%; bottom: -20%; left: 0; width: 55%;
+    z-index: 3; pointer-events: none; opacity: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgba(255,255,255,0.15) 35%,
+      rgba(255,250,235,0.72) 50%,
+      rgba(255,255,255,0.15) 65%,
+      transparent 100%
+    );
+    transform: translateX(-160%) rotate(4deg);
+  }
+  .book.open .page .shine { animation: shineSweep 1.5s cubic-bezier(.3,0,.2,1) 0.75s both; }
+
+  @keyframes shineSweep {
+    0%   { opacity: 0;    transform: translateX(-160%) rotate(4deg); }
+    18%  { opacity: 1; }
+    82%  { opacity: 1; }
+    100% { opacity: 0;    transform: translateX(300%) rotate(4deg); }
+  }
+
+  .page .sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .page .sparkles .sp {
+    position: absolute; width: 5px; height: 5px; border-radius: 50%; opacity: 0;
+    box-shadow: 0 0 6px 1px currentColor;
+  }
+  .page .sparkles .sp1 { top: 16%; left: 12%; }
+  .page .sparkles .sp2 { top: 28%; right: 14%; width: 4px; height: 4px; }
+  .page .sparkles .sp3 { top: 52%; left: 8%;  width: 3px; height: 3px; }
+  .page .sparkles .sp4 { top: 63%; right: 10%; }
+  .page .sparkles .sp5 { bottom: 16%; left: 20%; width: 4px; height: 4px; }
+  .page .sparkles .sp6 { bottom: 24%; right: 22%; width: 3px; height: 3px; }
+
+  .book.open .page .sparkles .sp { animation: twinkle 2.8s ease-in-out infinite; }
+  .book.open .page .sparkles .sp1 { animation-delay: 1.0s; }
+  .book.open .page .sparkles .sp2 { animation-delay: 1.5s; }
+  .book.open .page .sparkles .sp3 { animation-delay: 2.1s; }
+  .book.open .page .sparkles .sp4 { animation-delay: 1.3s; }
+  .book.open .page .sparkles .sp5 { animation-delay: 2.4s; }
+  .book.open .page .sparkles .sp6 { animation-delay: 1.8s; }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0;    transform: scale(0.6); }
+    50%      { opacity: 0.85; transform: scale(1.15); }
+  }
 
   /* ---- Pantallas chicas ---- */
   @media (max-width: 480px) {
@@ -322,6 +371,6 @@ body { margin: 0; }
   img, svg { max-width: 100%; }
 
   @media (prefers-reduced-motion: reduce) {
-    .fade-up, .float, .pulse, .petal { animation: none !important; }
+    .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
   }
