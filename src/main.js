@@ -291,11 +291,15 @@ import { toPng } from 'html-to-image';
     else if (state.view === 'invite') renderInvite();
   }
 
+  function creditoHTML() {
+    return '<footer class="credit"><a href="https://sb2b.vercel.app/" target="_blank" rel="noopener">StudioB2B</a></footer>';
+  }
+
   function shell(inner) {
     app.innerHTML =
       '<header class="top"><div class="logo-wrap"><img class="logo" src="/logo.png" alt=""/></div><p class="eyebrow">' + esc(SCHOOL_NAME) + '</p>' +
       '<h1 class="font-display">Invitaciones de Primera Comunión · 5° Grado B</h1></header>' +
-      '<main class="wrap"><div class="col">' + inner + '</div></main>';
+      '<main class="wrap"><div class="col">' + inner + '</div></main>' + creditoHTML();
   }
 
   function renderIntro() {
@@ -306,7 +310,6 @@ import { toPng } from 'html-to-image';
       '<p>Completá tus datos y vas a poder descargar tu invitación como imagen ' +
       'y compartirla por WhatsApp con un link que se abre como una tarjetita animada, con música.</p>' +
       '<button class="btn" id="start-btn">Comenzar ✨</button>' +
-      '<p class="credit"><a href="https://sb2b.vercel.app/" target="_blank" rel="noopener">https://sb2b.vercel.app/</a></p>' +
       '</div>'
     );
     document.getElementById('start-btn').onclick = function () { state.view = 'form'; render(); };
@@ -507,6 +510,7 @@ import { toPng } from 'html-to-image';
       '<p style="margin:0;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:' + t.accentDeep + ';opacity:0.8">' + esc(SCHOOL_NAME) + ' · 5° Grado B</p>' +
       '</div>' +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
+      creditoHTML() +
       '</div></div>';
 
     var book = document.getElementById('invite-book');
