@@ -256,6 +256,7 @@ import { toPng } from 'html-to-image';
       '<p>Completá tus datos y vas a poder descargar tu invitación como imagen ' +
       'y compartirla por WhatsApp con un link que se abre como una tarjetita animada, con música.</p>' +
       '<button class="btn" id="start-btn">Comenzar ✨</button>' +
+      '<p class="credit"><a href="https://sb2b.vercel.app/" target="_blank" rel="noopener">https://sb2b.vercel.app/</a></p>' +
       '</div>'
     );
     document.getElementById('start-btn').onclick = function () { state.view = 'form'; render(); };
