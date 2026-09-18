@@ -156,18 +156,59 @@ import { toPng } from 'html-to-image';
   function coverSrc(genero) { return genero === 'nene' ? '/cover-boy.jpg' : '/cover-girl.jpg'; }
   var state = { view: 'intro', form: JSON.parse(JSON.stringify(emptyForm)), shareUrl: '', duplicateNote: '' };
 
-  var params = new URLSearchParams(location.search);
-  var incoming = params.get('i');
-  if (incoming) {
-    try {
-      var parsed = JSON.parse(incoming);
-      state.view = 'invite';
-      state.inviteData = parsed;
-      state.opened = false;
-      state.musicOn = true;
-    } catch (e) {
-      state.view = 'intro';
+  // ---------- Link corto ----------
+  // Los datos del evento son fijos, asi que no viajan en la URL: solo el nombre,
+  // el genero en una letra y un codigo corto -> ?n=Valentina+Gomez&g=a&c=k3f9
+  var GEN_CODE = { nene: 'o', nena: 'a' };
+  var CODE_GEN = { o: 'nene', a: 'nena' };
+
+  function nuevoCodigo() {
+    return Math.random().toString(36).slice(2, 6);
+  }
+
+  function buildShareUrl(data) {
+    var url = new URL(location.href);
+    url.search = '';
+    url.hash = '';
+    var q = url.searchParams;
+    q.set('n', data.nombre);
+    q.set('g', GEN_CODE[data.genero] || 'a');
+    if (data.padres) q.set('p', data.padres);
+    if (data.mensaje && data.mensaje !== DEFAULT_MSG) q.set('m', data.mensaje);
+    q.set('c', data.codigo || nuevoCodigo());
+    return url.toString();
+  }
+
+  function leerInvitacion(qs) {
+    var nombre = qs.get('n');
+    if (nombre) {
+      return {
+        nombre: nombre,
+        genero: CODE_GEN[qs.get('g')] || 'nena',
+        padres: qs.get('p') || '',
+        mensaje: qs.get('m') || '',
+        codigo: qs.get('c') || '',
+        fecha: FECHA_EVENTO,
+        hora: HORA_EVENTO,
+        parroquia: PARROQUIA_EVENTO,
+        direccion: DIRECCION_EVENTO,
+      };
     }
+    // Compatibilidad: los links viejos llevaban el JSON entero en ?i=
+    var legacy = qs.get('i');
+    if (legacy) {
+      try { return JSON.parse(legacy); } catch (e) { return null; }
+    }
+    return null;
+  }
+
+  var params = new URLSearchParams(location.search);
+  var incoming = leerInvitacion(params);
+  if (incoming && incoming.nombre) {
+    state.view = 'invite';
+    state.inviteData = incoming;
+    state.opened = false;
+    state.musicOn = true;
   }
 
   var app = document.getElementById('app');
@@ -349,20 +390,28 @@ import { toPng } from 'html-to-image';
     var data = {
       nombre: f.nombre.trim(), fecha: f.fecha, hora: f.hora || '', parroquia: f.parroquia.trim(),
       direccion: f.direccion.trim(), padres: f.padres.trim(), mensaje: f.mensaje.trim(),
-      genero: f.genero,
+      genero: f.genero, codigo: f.codigo || nuevoCodigo(),
     };
-    var url = new URL(location.href);
-    url.search = '';
-    url.searchParams.set('i', JSON.stringify(data));
-    state.shareUrl = url.toString();
+    f.codigo = data.codigo;
+    state.shareUrl = buildShareUrl(data);
     state.view = 'success';
     registrarUso(data);
     render();
   }
 
+  function textoCompartir(nombre, url) {
+    return '✨ ¡Te invito a mi Primera Comunión! ✨\n\n' +
+      'Soy ' + nombre + ' y voy a recibir a Jesús por primera vez.\n\n' +
+      '📅 ' + formatFechaEs(FECHA_EVENTO) + '\n' +
+      '🕐 ' + formatHora(HORA_EVENTO) + '\n' +
+      '⛪ ' + PARROQUIA_EVENTO + '\n' +
+      '📍 ' + DIRECCION_EVENTO + '\n\n' +
+      'Abrí tu invitación acá 👉 ' + url;
+  }
+
   function renderSuccess() {
     var f = state.form;
-    var waText = encodeURIComponent('¡Te invito a la Primera Comunión de ' + f.nombre.trim() + '! ✨ Mirá la invitación acá: ' + state.shareUrl);
+    var waText = encodeURIComponent(textoCompartir(f.nombre.trim(), state.shareUrl));
     shell(
       '<div class="fade-up success-wrap">' +
       '<div><p class="label preview-label">Tu invitación · tocá para abrirla</p>' + bookHTML('success-book', f) + '</div>' +
@@ -469,7 +518,7 @@ import { toPng } from 'html-to-image';
     document.getElementById('share-invite-btn').addEventListener('click', function () {
       var url = location.href;
       if (navigator.share) {
-        navigator.share({ title: 'Primera Comunión de ' + data.nombre, text: 'Te invito a la Primera Comunión de ' + data.nombre, url: url }).catch(function () {});
+        navigator.share({ title: 'Mi Primera Comunión · ' + data.nombre, text: textoCompartir(data.nombre, url) }).catch(function () {});
       } else {
         navigator.clipboard.writeText(url).then(function () { alert('Link copiado'); }).catch(function () {});
       }
