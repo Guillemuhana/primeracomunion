@@ -167,16 +167,25 @@ import { toPng } from 'html-to-image';
   }
 
   function buildShareUrl(data) {
-    var url = new URL(location.href);
+    // Se comparte /nene o /nena: cada pagina trae su propia imagen de vista
+    // previa, porque el crawler de WhatsApp no ejecuta JavaScript.
+    var url = new URL(data.genero === 'nene' ? 'nene' : 'nena', location.href);
     url.search = '';
     url.hash = '';
     var q = url.searchParams;
     q.set('n', data.nombre);
-    q.set('g', GEN_CODE[data.genero] || 'a');
     if (data.padres) q.set('p', data.padres);
     if (data.mensaje && data.mensaje !== DEFAULT_MSG) q.set('m', data.mensaje);
     q.set('c', data.codigo || nuevoCodigo());
     return url.toString();
+  }
+
+  // El genero sale de la pagina (/nene o /nena). El parametro ?g= se sigue
+  // leyendo para no romper los links ya compartidos.
+  function generoDeLaPagina() {
+    if (/nene/.test(location.pathname)) return 'nene';
+    if (/nena/.test(location.pathname)) return 'nena';
+    return '';
   }
 
   function leerInvitacion(qs) {
@@ -184,7 +193,7 @@ import { toPng } from 'html-to-image';
     if (nombre) {
       return {
         nombre: nombre,
-        genero: CODE_GEN[qs.get('g')] || 'nena',
+        genero: generoDeLaPagina() || CODE_GEN[qs.get('g')] || 'nena',
         padres: qs.get('p') || '',
         mensaje: qs.get('m') || '',
         codigo: qs.get('c') || '',
