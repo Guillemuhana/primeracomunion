@@ -39,23 +39,29 @@ body { margin: 0; }
   .font-display { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; }
 
   header.top {
-    padding: 26px 20px 22px;
+    padding: 40px 20px 28px;
     text-align: center;
-    background: var(--surface);
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: radial-gradient(120% 140% at 50% -10%, color-mix(in srgb, var(--gold) 14%, var(--surface)) 0%, var(--surface) 62%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
     position: relative;
   }
   header.top::after {
     content: ''; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-    width: 64px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    width: 84px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
-  header.top .logo { width: 52px; height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.18)); }
+  header.top .logo-wrap {
+    width: 92px; height: 92px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 32% 28%, #ffffff, var(--surface) 70%);
+    box-shadow: 0 14px 30px -12px rgba(0,0,0,0.28), inset 0 0 0 1px color-mix(in srgb, var(--gold) 35%, transparent);
+    margin-bottom: 2px;
+  }
+  header.top .logo { width: 60px; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.16)); }
   header.top .eyebrow {
-    margin: 0; font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase;
+    margin: 0; font-size: 0.76rem; letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--gold-deep); font-weight: 800;
   }
   header.top h1 {
-    margin: 0; font-size: 1.4rem; font-weight: 600;
+    margin: 0; font-size: 1.5rem; font-weight: 600;
   }
 
   main.wrap { flex: 1; display: flex; justify-content: center; padding: 40px 16px 70px; }
@@ -181,9 +187,15 @@ body { margin: 0; }
   }
   .linklike { background: none; border: none; color: var(--gold-deep); font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
 
-  .intro { text-align: center; max-width: 520px; margin: 20px auto 0; }
-  .intro h2 { font-size: 1.8rem; font-weight: 600; margin: 10px 0; }
-  .intro p { color: var(--ink-soft); line-height: 1.6; margin: 0 0 26px; }
+  .intro { text-align: center; max-width: 520px; margin: 12px auto 0; }
+  .intro .badge {
+    width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px; background: radial-gradient(circle at 34% 28%, var(--surface), color-mix(in srgb, var(--gold) 12%, var(--surface)) 75%);
+    box-shadow: 0 16px 32px -14px rgba(0,0,0,0.3), inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent);
+  }
+  .intro h2 { font-size: 2.1rem; font-weight: 600; margin: 10px 0 14px; letter-spacing: -0.01em; }
+  .intro p { color: var(--ink-soft); line-height: 1.65; margin: 0 0 30px; font-size: 1rem; }
+  .intro .btn { padding: 17px 40px; font-size: 1.05rem; }
 
   .invite-screen {
     min-height: 100dvh; position: relative; overflow: hidden; display: flex; flex-direction: column;

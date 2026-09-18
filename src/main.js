@@ -243,7 +243,7 @@ import { toPng } from 'html-to-image';
 
   function shell(inner) {
     app.innerHTML =
-      '<header class="top"><img class="logo" src="/logo.png" alt=""/><p class="eyebrow">' + esc(SCHOOL_NAME) + '</p>' +
+      '<header class="top"><div class="logo-wrap"><img class="logo" src="/logo.png" alt=""/></div><p class="eyebrow">' + esc(SCHOOL_NAME) + '</p>' +
       '<h1 class="font-display">Invitaciones de Primera Comunión · 5° Grado B</h1></header>' +
       '<main class="wrap"><div class="col">' + inner + '</div></main>';
   }
@@ -251,11 +251,11 @@ import { toPng } from 'html-to-image';
   function renderIntro() {
     shell(
       '<div class="intro fade-up">' +
-      '<div style="display:inline-block;margin-bottom:10px">' + motifSvg('calix', '#c9a24b', '#9c7a2e') + '</div>' +
+      '<div class="badge">' + motifSvg('calix', '#c9a24b', '#9c7a2e', 52) + '</div>' +
       '<h2 class="font-display">Armá tu tarjeta de invitación</h2>' +
-      '<p>Completá tus datos, elegí un diseño y vas a poder descargar tu invitación ' +
-      'y compartirla por WhatsApp con un link que se abre como una tarjeta animada, con música.</p>' +
-      '<button class="btn" id="start-btn">Comenzar</button>' +
+      '<p>Completá tus datos y vas a poder descargar tu invitación como imagen ' +
+      'y compartirla por WhatsApp con un link que se abre como una tarjetita animada, con música.</p>' +
+      '<button class="btn" id="start-btn">Comenzar ✨</button>' +
       '</div>'
     );
     document.getElementById('start-btn').onclick = function () { state.view = 'form'; render(); };
@@ -361,7 +361,7 @@ import { toPng } from 'html-to-image';
 
   function renderSuccess() {
     var f = state.form;
-    var waText = encodeURIComponent('¡Te invito a mi Primera Comunión! ✨ Mirá mi invitación acá: ' + state.shareUrl);
+    var waText = encodeURIComponent('¡Te invito a la Primera Comunión de ' + f.nombre.trim() + '! ✨ Mirá la invitación acá: ' + state.shareUrl);
     shell(
       '<div class="fade-up success-wrap">' +
       '<div><p class="label preview-label">Tu invitación · tocá para abrirla</p>' + bookHTML('success-book', f) + '</div>' +
@@ -424,6 +424,7 @@ import { toPng } from 'html-to-image';
   function renderInvite() {
     var data = state.inviteData;
     var t = getPalette(data.genero);
+    if (data.nombre) document.title = 'Primera Comunión de ' + data.nombre;
 
     var petals = '';
     for (var i = 0; i < 14; i++) {
@@ -467,7 +468,7 @@ import { toPng } from 'html-to-image';
     document.getElementById('share-invite-btn').addEventListener('click', function () {
       var url = location.href;
       if (navigator.share) {
-        navigator.share({ title: 'Primera Comunión de ' + data.nombre, text: 'Te invito a mi Primera Comunión', url: url }).catch(function () {});
+        navigator.share({ title: 'Primera Comunión de ' + data.nombre, text: 'Te invito a la Primera Comunión de ' + data.nombre, url: url }).catch(function () {});
       } else {
         navigator.clipboard.writeText(url).then(function () { alert('Link copiado'); }).catch(function () {});
       }
