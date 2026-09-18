@@ -103,11 +103,12 @@ body { margin: 0; }
   }
   .cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-name {
-    position: absolute; top: 31%; left: 50%; transform: translate(-50%, -50%); width: 72%;
-    text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 600; line-height: 1.08;
-    color: #4a3924; word-break: break-word; font-size: clamp(0.85rem, 6.6cqw, 1.85rem);
-    background: rgba(255,253,248,0.82); padding: 4% 8%; border-radius: 14px;
-    box-shadow: 0 4px 14px -4px rgba(0,0,0,0.12);
+    position: absolute; top: 37.5%; left: 50%; transform: translate(-50%, -50%); width: 70%;
+    text-align: center; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-style: italic;
+    line-height: 1.1; letter-spacing: 0.015em;
+    color: #7a5a28; word-break: break-word; font-size: clamp(0.85rem, 6.2cqw, 1.7rem);
+    background: rgba(255,253,248,0.85); padding: 3.5% 8%; border-radius: 14px;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(190,150,80,0.4);
   }
   .cover-hint {
     position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%);
