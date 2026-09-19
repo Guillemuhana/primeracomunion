@@ -172,8 +172,8 @@ body { margin: 0; }
   .page .school img { width: clamp(42px, 12cqw, 72px); height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22)); }
 
   .page .church-banner {
-    width: 88%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
-    margin: 0 0 1.8%; flex: 0 1 auto; min-height: 0;
+    width: 80%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
+    margin: 0 0 1.5%; flex: 0 1 auto; min-height: 0;
     box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
   .page .church-banner img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
@@ -181,7 +181,7 @@ body { margin: 0; }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.72rem, 3.4cqw, 1.15rem); font-weight: 600;
-    letter-spacing: 0.1em; margin: 0 0 0.2%; display: flex; align-items: center; justify-content: center; gap: 2.5cqw;
+    letter-spacing: 0.1em; margin: 0 0 0.1%; display: flex; align-items: center; justify-content: center; gap: 2.5cqw;
   }
   .page .kicker i { display: block; width: clamp(12px, 5cqw, 26px); height: 1px; opacity: 0.7; font-style: normal; }
   .page h2 {
@@ -189,14 +189,14 @@ body { margin: 0; }
     text-shadow: 0 1px 2px rgba(255,255,255,0.6);
     letter-spacing: -0.01em; word-break: break-word;
   }
-  .page .rule { margin: 0 0 0.4%; display: flex; align-items: center; justify-content: center; gap: 3%; }
+  .page .rule { margin: 0 0 0.2%; display: flex; align-items: center; justify-content: center; gap: 3%; }
   /* Lineas finas a los lados del rombo */
   .page .rule::before, .page .rule::after {
     content: ''; display: block; width: 14%; height: 1px; opacity: 0.45;
     background: currentColor;
   }
   .page .msg {
-    font-style: italic; font-size: clamp(0.92rem, 4.4cqw, 1.5rem); line-height: 1.42; margin: 0; max-width: 95%;
+    font-style: italic; font-size: clamp(1.02rem, 5cqw, 1.7rem); line-height: 1.38; margin: 0; max-width: 97%;
     position: relative; opacity: 0.95;
   }
   .page .msg::before { content: '“'; }
