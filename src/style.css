@@ -149,16 +149,16 @@ body { margin: 0; }
   .page .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
   .page .corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
 
-  .page .school { display: flex; align-items: center; gap: 9px; margin-bottom: 4%; }
-  .page .school span { font-size: clamp(0.5rem, 2.2cqw, 0.7rem); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; opacity: 0.92; line-height: 1.25; text-align: left; }
-  .page .school img { width: clamp(22px, 6.5cqw, 38px); height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+  .page .school { display: flex; flex-direction: column; align-items: center; gap: 2.2%; margin-bottom: 3.5%; }
+  .page .school span { font-size: clamp(0.52rem, 2.5cqw, 0.8rem); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; opacity: 0.95; line-height: 1.3; text-align: center; }
+  .page .school img { width: clamp(40px, 13cqw, 76px); height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22)); }
 
   .page .church-banner {
-    width: 100%; aspect-ratio: 900 / 506; border-radius: 14px; overflow: hidden; margin: 0 0 5%; flex: none;
-    box-shadow: 0 10px 22px -12px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.5);
+    width: 100%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden; margin: 0 0 4%; flex: none;
+    box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
   .page .church-banner img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .page .parroquia-logo { width: clamp(54px, 19cqw, 110px); height: auto; margin: 0 0 4%; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.16)); }
+  .page .parroquia-logo { width: clamp(76px, 26cqw, 150px); height: auto; margin: 0 0 3%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.72rem, 3.4cqw, 1.15rem); font-weight: 600;
@@ -166,25 +166,25 @@ body { margin: 0; }
   }
   .page .kicker i { display: block; width: clamp(12px, 5cqw, 26px); height: 1px; opacity: 0.7; font-style: normal; }
   .page h2 {
-    font-size: clamp(1.15rem, 9cqw, 2.9rem); font-weight: 600; margin: 1% 0 3%; line-height: 1.04;
+    font-size: clamp(1.3rem, 10cqw, 3.2rem); font-weight: 600; margin: 1.5% 0 2.5%; line-height: 1.02;
     letter-spacing: -0.01em; word-break: break-word;
   }
   .page .rule { margin: 0 0 5%; display: flex; align-items: center; justify-content: center; }
   .page .msg {
-    font-style: italic; font-size: clamp(0.7rem, 3.5cqw, 1.15rem); line-height: 1.55; margin: 0; max-width: 96%;
+    font-style: italic; font-size: clamp(0.74rem, 3.7cqw, 1.22rem); line-height: 1.6; margin: 0; max-width: 92%;
     position: relative; opacity: 0.95;
   }
   .page .msg::before { content: '“'; }
   .page .msg::after { content: '”'; }
   .page .divider-motif { margin: 4% 0; opacity: 0.85; }
   .page .spacer { flex: 1; min-height: 6px; }
-  .page .when { display: flex; flex-direction: column; gap: 3px; font-size: clamp(0.66rem, 3.2cqw, 1.05rem); font-weight: 700; letter-spacing: 0.01em; }
-  .page .parroquia { margin: 4% 0 0; font-size: clamp(0.62rem, 3cqw, 0.98rem); font-weight: 700; }
+  .page .when { display: flex; flex-direction: column; gap: 0.6%; font-size: clamp(0.72rem, 3.5cqw, 1.15rem); font-weight: 700; letter-spacing: 0.01em; }
+  .page .parroquia { margin: 3% 0 0; font-size: clamp(0.66rem, 3.1cqw, 1.02rem); font-weight: 700; }
   .page .direccion { margin: 1px 0 0; font-size: clamp(0.56rem, 2.6cqw, 0.86rem); opacity: 0.85; }
   .page .padres { margin: 4% 0 0; font-size: clamp(0.54rem, 2.5cqw, 0.82rem); font-style: italic; }
-  .page .footer-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6%; }
-  .page .footer-logo img { width: clamp(18px, 5cqw, 30px); height: auto; }
-  .page .footer-logo span { font-size: clamp(0.44rem, 1.9cqw, 0.62rem); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+  .page .footer-logo { display: flex; align-items: center; justify-content: center; gap: 2.5%; margin-top: 4.5%; }
+  .page .footer-logo img { width: clamp(26px, 8cqw, 46px); height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
+  .page .footer-logo span { font-size: clamp(0.46rem, 2cqw, 0.66rem); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
 
   .preview-label { text-align: center; }
 
@@ -289,6 +289,72 @@ body { margin: 0; }
   .invite-screen.opened .invite-extra { display: flex; }
   .petal { display: none; }
   .invite-screen.opened .petal { display: block; }
+
+  /* ---- Efectos de la pantalla de invitacion ---- */
+  /* Todos van scopeados a .book o .invite-screen, asi que la imagen que se
+     descarga (que se renderiza fuera de esos contenedores) sale limpia. */
+
+  /* Vineta suave para que la tarjeta resalte del fondo */
+  .invite-screen::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(125% 85% at 50% 38%, transparent 42%, rgba(20,14,4,0.18) 100%);
+  }
+
+  /* La tapa flota apenas mientras espera que la abran */
+  .invite-screen:not(.opened) .book-wrap { animation: cardFloat 6.5s ease-in-out infinite; }
+  @keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
+  }
+
+  /* El cartelito de "Toca para abrir" late para invitar al toque */
+  .book:not(.open) .cover-hint { animation: hintPulse 2.6s ease-in-out infinite; }
+  @keyframes hintPulse {
+    0%, 100% { transform: translateX(-50%) scale(1);
+               box-shadow: 0 6px 16px -8px rgba(0,0,0,0.3); }
+    50%      { transform: translateX(-50%) scale(1.07);
+               box-shadow: 0 8px 24px -6px rgba(201,162,75,0.6); }
+  }
+
+  /* Reflejo dorado que recorre el nombre */
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .book .page h2 {
+      background-image: linear-gradient(100deg,
+        currentColor 0%, currentColor 40%, #e8c987 50%, currentColor 60%, currentColor 100%);
+      background-size: 260% 100%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      animation: nameShimmer 7s ease-in-out 2s infinite;
+    }
+  }
+  @keyframes nameShimmer {
+    0%, 100% { background-position: 135% 0; }
+    50%      { background-position: -35% 0; }
+  }
+
+  /* Los petalos como particulas de luz */
+  .petal { filter: blur(0.4px); box-shadow: 0 0 8px 1px currentColor; }
+
+  /* Boton de musica mas presentable */
+  .music-toggle {
+    backdrop-filter: blur(6px); font-weight: 700;
+    box-shadow: 0 6px 18px -8px rgba(20,14,4,0.4);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .music-toggle:hover { transform: scale(1.08); }
+
+  /* Brillo que recorre el boton de compartir */
+  .invite-extra .btn { position: relative; overflow: hidden; }
+  .invite-extra .btn::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 45%; left: 0;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: translateX(-180%);
+    animation: btnSheen 5s ease-in-out 2.5s infinite;
+  }
+  @keyframes btnSheen {
+    0%, 62%   { transform: translateX(-180%); }
+    88%, 100% { transform: translateX(320%); }
+  }
 
   /* ---- Cancion (Apple Music) ---- */
   .song { width: 100%; margin-top: 18px; }
@@ -396,6 +462,8 @@ body { margin: 0; }
   img, svg { max-width: 100%; }
 
   @media (prefers-reduced-motion: reduce) {
-    .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp { animation: none !important; }
+    .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp,
+    .invite-screen:not(.opened) .book-wrap, .book:not(.open) .cover-hint,
+    .book .page h2, .invite-extra .btn::after { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
   }

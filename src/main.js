@@ -113,6 +113,29 @@ import { toPng } from 'html-to-image';
     }, delay);
     timeouts.push(id);
   }
+  // Melodia simple y reverente sobre el pad
+  var MELODIA = [523.25, 659.25, 783.99, 659.25, 587.33, 523.25, 587.33, 659.25];
+  var pasoMelodia = 0;
+  function playNota(time, freq, dur) {
+    var osc = actx.createOscillator(), gain = actx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.exponentialRampToValueAtTime(0.085, time + 0.14);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+    osc.connect(gain); gain.connect(masterGain);
+    osc.start(time); osc.stop(time + dur + 0.1);
+  }
+  function scheduleMelodia() {
+    var id = setTimeout(function () {
+      if (!running) return;
+      playNota(actx.currentTime, MELODIA[pasoMelodia % MELODIA.length], 1.9);
+      pasoMelodia++;
+      scheduleMelodia();
+    }, 1500);
+    timeouts.push(id);
+  }
+
   function startMusic() {
     ensureCtx();
     if (actx.state === 'suspended') actx.resume();
@@ -130,7 +153,9 @@ import { toPng } from 'html-to-image';
     masterGain.gain.cancelScheduledValues(actx.currentTime);
     masterGain.gain.setValueAtTime(masterGain.gain.value, actx.currentTime);
     masterGain.gain.linearRampToValueAtTime(0.55, actx.currentTime + 2.5);
+    pasoMelodia = 0;
     scheduleBells();
+    scheduleMelodia();
   }
   function stopMusic() {
     if (!actx || !running) return;
@@ -144,6 +169,13 @@ import { toPng } from 'html-to-image';
     setTimeout(function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); }, 1300);
     padOsc = [];
   }
+
+  function desbloquearAudio() {
+    if (actx && running && actx.state === 'suspended') actx.resume();
+  }
+  ['pointerdown', 'touchend', 'keydown'].forEach(function (ev) {
+    document.addEventListener(ev, desbloquearAudio, { passive: true });
+  });
 
   // ---------- State ----------
   // Cancion de Apple Music. Solo suena si el invitado toca play: los navegadores
