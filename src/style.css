@@ -293,7 +293,17 @@ body { margin: 0; }
     filter: drop-shadow(0 26px 30px rgba(20,14,4,0.22)) drop-shadow(0 6px 10px rgba(20,14,4,0.14));
     transition: filter 1.1s ease;
   }
-  .book-wrap.is-open { filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18)) drop-shadow(0 0 22px rgba(201,162,75,0.34)); }
+  .book-wrap.is-open { animation: haloBreathe 4.5s ease-in-out infinite; }
+  @keyframes haloBreathe {
+    0%, 100% {
+      filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18))
+              drop-shadow(0 0 20px rgba(201,162,75,0.3));
+    }
+    50% {
+      filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18))
+              drop-shadow(0 0 38px rgba(201,162,75,0.62));
+    }
+  }
   .book { position: relative; width: 100%; aspect-ratio: 700 / 1050; transform-style: preserve-3d; z-index: 1; }
   .book .face {
     position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; overflow: hidden;
@@ -401,19 +411,20 @@ body { margin: 0; }
     );
     transform: translateX(-160%) rotate(4deg);
   }
-  .book.open .page .shine { animation: shineSweep 1.5s cubic-bezier(.3,0,.2,1) 0.75s both; }
+  .book.open .page .shine { animation: shineSweep 6.5s cubic-bezier(.3,0,.2,1) 0.7s infinite; }
 
   @keyframes shineSweep {
-    0%   { opacity: 0;    transform: translateX(-160%) rotate(4deg); }
-    18%  { opacity: 1; }
-    82%  { opacity: 1; }
-    100% { opacity: 0;    transform: translateX(300%) rotate(4deg); }
+    0%       { opacity: 0; transform: translateX(-160%) rotate(4deg); }
+    4%       { opacity: 1; }
+    26%      { opacity: 1; }
+    30%      { opacity: 0; transform: translateX(300%) rotate(4deg); }
+    100%     { opacity: 0; transform: translateX(300%) rotate(4deg); }
   }
 
   .page .sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
   .page .sparkles .sp {
-    position: absolute; width: 5px; height: 5px; border-radius: 50%; opacity: 0;
-    box-shadow: 0 0 6px 1px currentColor;
+    position: absolute; width: 6px; height: 6px; border-radius: 50%; opacity: 0;
+    box-shadow: 0 0 10px 2px currentColor;
   }
   .page .sparkles .sp1 { top: 16%; left: 12%; }
   .page .sparkles .sp2 { top: 28%; right: 14%; width: 4px; height: 4px; }
@@ -431,8 +442,41 @@ body { margin: 0; }
   .book.open .page .sparkles .sp6 { animation-delay: 1.8s; }
 
   @keyframes twinkle {
-    0%, 100% { opacity: 0;    transform: scale(0.6); }
-    50%      { opacity: 0.85; transform: scale(1.15); }
+    0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+    50%      { opacity: 1; transform: scale(1.35) rotate(45deg); }
+  }
+
+  /* Destello que cruza la tapa cerrada */
+  .book:not(.open) .cover-wrap::after {
+    content: ''; position: absolute; top: -30%; bottom: -30%; left: 0; width: 38%;
+    pointer-events: none; z-index: 2;
+    background: linear-gradient(100deg,
+      transparent 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0.62) 50%,
+      rgba(255,255,255,0.12) 70%, transparent 100%);
+    transform: translateX(-220%) rotate(6deg);
+    animation: coverSheen 5s ease-in-out 1.2s infinite;
+  }
+  @keyframes coverSheen {
+    0%        { opacity: 0; transform: translateX(-220%) rotate(6deg); }
+    5%        { opacity: 1; }
+    33%       { opacity: 1; }
+    38%, 100% { opacity: 0; transform: translateX(330%) rotate(6deg); }
+  }
+
+  /* Los motivos dorados palpitan apenas */
+  .book.open .page .rule svg,
+  .book.open .page .divider-motif { animation: goldGlow 3.6s ease-in-out infinite; }
+  @keyframes goldGlow {
+    0%, 100% { filter: drop-shadow(0 0 0 transparent); opacity: 0.85; }
+    50%      { filter: drop-shadow(0 0 7px rgba(201,162,75,0.85)); opacity: 1; }
+  }
+
+  /* El bloque de fecha y hora, con un resplandor suave */
+  .book.open .page .when { animation: whenGlow 4.2s ease-in-out 1s infinite; }
+  @keyframes whenGlow {
+    0%, 100% { box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22); }
+    50%      { box-shadow: inset 0 0 0 1px rgba(160,125,55,0.5),
+                           0 0 18px -4px rgba(201,162,75,0.45); }
   }
 
   /* ---- Pantallas chicas ---- */
@@ -481,7 +525,9 @@ body { margin: 0; }
   @media (prefers-reduced-motion: reduce) {
     .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp,
     .invite-screen:not(.opened) .book-wrap, .book:not(.open) .cover-hint,
-    .invite-extra .btn::after, .intro .badge { animation: none !important; }
+    .invite-extra .btn::after, .intro .badge, .book-wrap.is-open,
+    .book:not(.open) .cover-wrap::after, .book.open .page .rule svg,
+    .book.open .page .divider-motif, .book.open .page .when { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
   }
 
