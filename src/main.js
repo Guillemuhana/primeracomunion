@@ -82,114 +82,19 @@ import { toPng } from 'html-to-image';
     return div.innerHTML;
   }
 
-  // ---------- Ambient generative music (Web Audio, no external files) ----------
-  var actx = null, masterGain = null, running = false, padOsc = [], timeouts = [];
-  var CHORD = [261.63, 329.63, 392.0, 523.25];
-  var BELLS = [523.25, 659.25, 783.99, 1046.5];
-  function ensureCtx() {
-    if (!actx) {
-      actx = new (window.AudioContext || window.webkitAudioContext)();
-      masterGain = actx.createGain();
-      masterGain.gain.value = 0.0001;
-      masterGain.connect(actx.destination);
-    }
-    return actx;
-  }
-  function playBell(time, freq) {
-    var osc = actx.createOscillator(), gain = actx.createGain();
-    osc.type = 'sine'; osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.14, time + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.0001, time + 2.4);
-    osc.connect(gain); gain.connect(masterGain);
-    osc.start(time); osc.stop(time + 2.5);
-  }
-  function scheduleBells() {
-    var delay = 2800 + Math.random() * 3200;
-    var id = setTimeout(function () {
-      if (!running) return;
-      playBell(actx.currentTime, BELLS[Math.floor(Math.random() * BELLS.length)]);
-      scheduleBells();
-    }, delay);
-    timeouts.push(id);
-  }
-  // Melodia simple y reverente sobre el pad
-  var MELODIA = [523.25, 659.25, 783.99, 659.25, 587.33, 523.25, 587.33, 659.25];
-  var pasoMelodia = 0;
-  function playNota(time, freq, dur) {
-    var osc = actx.createOscillator(), gain = actx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.085, time + 0.14);
-    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
-    osc.connect(gain); gain.connect(masterGain);
-    osc.start(time); osc.stop(time + dur + 0.1);
-  }
-  function scheduleMelodia() {
-    var id = setTimeout(function () {
-      if (!running) return;
-      playNota(actx.currentTime, MELODIA[pasoMelodia % MELODIA.length], 1.9);
-      pasoMelodia++;
-      scheduleMelodia();
-    }, 1500);
-    timeouts.push(id);
-  }
-
-  function startMusic() {
-    ensureCtx();
-    // resume() puede quedar pendiente o fallar segun el navegador, asi que
-    // reintentamos cuando termine y dejamos el respaldo por interaccion.
-    if (actx.state === 'suspended') {
-      try {
-        var r = actx.resume();
-        if (r && r.then) r.then(function () {}, function () {});
-      } catch (e) {}
-    }
-    if (running) return;
-    running = true;
-    padOsc = CHORD.map(function (freq, i) {
-      var osc = actx.createOscillator(), gain = actx.createGain();
-      osc.type = i === 0 ? 'sine' : 'triangle';
-      osc.frequency.value = freq;
-      gain.gain.value = 0.05 / (i + 1);
-      osc.connect(gain); gain.connect(masterGain);
-      osc.start();
-      return osc;
-    });
-    masterGain.gain.cancelScheduledValues(actx.currentTime);
-    masterGain.gain.setValueAtTime(masterGain.gain.value, actx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.55, actx.currentTime + 2.5);
-    pasoMelodia = 0;
-    scheduleBells();
-    scheduleMelodia();
-  }
-  function stopMusic() {
-    if (!actx || !running) return;
-    running = false;
-    timeouts.forEach(clearTimeout); timeouts = [];
-    var now = actx.currentTime;
-    masterGain.gain.cancelScheduledValues(now);
-    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-    masterGain.gain.linearRampToValueAtTime(0.0001, now + 1.2);
-    var oscs = padOsc;
-    setTimeout(function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); }, 1300);
-    padOsc = [];
-  }
-
-  function desbloquearAudio() {
-    if (!actx) return;
-    if (actx.state === 'suspended') {
-      try { actx.resume(); } catch (e) {}
-    }
-  }
-  ['pointerdown', 'touchend', 'keydown'].forEach(function (ev) {
-    document.addEventListener(ev, desbloquearAudio, { passive: true });
-  });
-
   // ---------- State ----------
   // Cancion de Apple Music. Solo suena si el invitado toca play: los navegadores
   // bloquean el autoplay con sonido en iframes de otro dominio.
+  function cancionHTML(color) {
+    return '<div class="song">' +
+      '<p class="song-label"' + (color ? ' style="color:' + color + '"' : '') + '>♪ Tocá play para escuchar la canción</p>' +
+      '<iframe class="song-frame" title="Mi Primera Comunión" loading="lazy" ' +
+      'allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" frameborder="0" height="175" ' +
+      'sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" ' +
+      'src="' + APPLE_MUSIC_SRC + '"></iframe>' +
+      '</div>';
+  }
+
   var APPLE_MUSIC_SRC = 'https://embed.music.apple.com/es/song/mi-primera-comuni%C3%B3n/638856865';
 
   var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
@@ -263,7 +168,6 @@ import { toPng } from 'html-to-image';
     state.view = 'invite';
     state.inviteData = incoming;
     state.opened = false;
-    state.musicOn = true;
   }
 
   var app = document.getElementById('app');
@@ -481,24 +385,19 @@ import { toPng } from 'html-to-image';
       coverHTML(f, { id: 'capture-cover' }) +
       '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside' }) + '</div>' +
       '</div>' +
-      '<button class="music-toggle" id="music-toggle-success" title="Musica">♪</button>' +
       '<div class="actions">' +
       '<button class="btn wa" id="share-btn">Compartir</button>' +
       '<button class="btn" id="download-btn">Descargar</button>' +
       '<a class="btn ghost" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer">Ver presentación</a>' +
       '</div>' +
+      '<div id="song-slot"></div>' +
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
       '</div>'
     );
-    // Al abrir la tarjeta arranca la musica: el toque que la abre es el gesto
-    // que el navegador pide para habilitar audio.
-    state.musicOn = true;
-    wireBook('success-book', function () { startMusic(); });
-
-    document.getElementById('music-toggle-success').addEventListener('click', function (e) {
-      if (state.musicOn) { stopMusic(); state.musicOn = false; }
-      else { startMusic(); state.musicOn = true; }
-      e.currentTarget.textContent = state.musicOn ? '♪' : '✕';
+    // El reproductor aparece recien cuando se abre la tarjeta
+    wireBook('success-book', function () {
+      var hueco = document.getElementById('song-slot');
+      if (hueco && !hueco.innerHTML) hueco.innerHTML = cancionHTML();
     });
 
     // Compartir: el menu nativo del celular si existe, si no WhatsApp.
@@ -565,7 +464,6 @@ import { toPng } from 'html-to-image';
     app.innerHTML =
       '<div class="invite-screen' + (state.opened ? ' opened' : '') + '" style="background:linear-gradient(180deg,' + t.bg + ' 0%,' + t.bg2 + ' 100%);color:' + t.ink + '">' +
       '<div style="position:fixed;inset:0;background-image:url(/church.jpg);background-size:cover;background-position:center;opacity:0.05;pointer-events:none;z-index:0"></div>' +
-      '<button class="music-toggle" id="music-toggle" style="border:1px solid ' + t.accent + '88;color:' + t.accentDeep + '">' + (state.musicOn ? '♪' : '✕') + '</button>' +
       petals +
       '<div class="invite-book-wrap fade-up">' + bookHTML('invite-book', data) + '</div>' +
       '<div class="invite-extra">' +
@@ -574,10 +472,7 @@ import { toPng } from 'html-to-image';
       '<img src="/logo.png" alt="" style="width:16px;height:auto"/>' +
       '<p style="margin:0;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:' + t.accentDeep + ';opacity:0.8">' + esc(SCHOOL_NAME) + ' · 5° Grado B</p>' +
       '</div>' +
-      '<div class="song">' +
-      '<p class="song-label" style="color:' + t.accentDeep + '">♪ Escuchá la canción</p>' +
-      '<iframe id="song-frame" title="Mi Primera Comunión" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write" frameborder="0" height="175" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="' + APPLE_MUSIC_SRC + '"></iframe>' +
-      '</div>' +
+      cancionHTML(t.accentDeep) +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
       creditoHTML() +
       '</div></div>';
@@ -590,13 +485,8 @@ import { toPng } from 'html-to-image';
     wireBook('invite-book', function () {
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
-      if (state.musicOn) startMusic();
     });
 
-    document.getElementById('music-toggle').addEventListener('click', function (e) {
-      if (state.musicOn) { stopMusic(); state.musicOn = false; } else { startMusic(); state.musicOn = true; }
-      e.target.textContent = state.musicOn ? '♪' : '✕';
-    });
     document.getElementById('share-invite-btn').addEventListener('click', function () {
       var url = location.href;
       if (navigator.share) {
