@@ -132,7 +132,7 @@ import { toPng } from 'html-to-image';
   var HORA_EVENTO = '19:00';
   var DIRECCION_EVENTO = 'Rufino Varela Ortiz 2600 – B° Matienzo';
   var PARROQUIA_EVENTO = 'Parroquia Nuestra Señora de Fátima y San Pío V';
-  var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, padres: '', mensaje: '', genero: '' };
+  var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, mensaje: '', genero: '' };
   function illusSrc(genero) { return genero === 'nene' ? '/boy.jpg' : '/girl.jpg'; }
   function coverSrc(genero) { return genero === 'nene' ? '/cover-boy.jpg' : '/cover-girl.jpg'; }
   var state = { view: 'intro', form: JSON.parse(JSON.stringify(emptyForm)), shareUrl: '', duplicateNote: '' };
@@ -155,7 +155,6 @@ import { toPng } from 'html-to-image';
     url.hash = '';
     var q = url.searchParams;
     q.set('n', data.nombre);
-    if (data.padres) q.set('p', data.padres);
     if (data.mensaje && data.mensaje !== DEFAULT_MSG) q.set('m', data.mensaje);
     q.set('c', data.codigo || nuevoCodigo());
     return url.toString();
@@ -175,7 +174,6 @@ import { toPng } from 'html-to-image';
       return {
         nombre: nombre,
         genero: generoDeLaPagina() || CODE_GEN[qs.get('g')] || 'nena',
-        padres: qs.get('p') || '',
         mensaje: qs.get('m') || '',
         codigo: qs.get('c') || '',
         fecha: FECHA_EVENTO,
@@ -237,7 +235,6 @@ import { toPng } from 'html-to-image';
       (data.hora ? '<span style="font-weight:600">' + esc(formatHora(data.hora)) + '</span>' : '') + '</div>' +
       (data.parroquia ? '<p class="parroquia">' + esc(data.parroquia) + '</p>' : '') +
       (data.direccion ? '<p class="direccion">' + esc(data.direccion) + '</p>' : '') +
-      (data.padres ? '<p class="padres" style="color:' + t.accentDeep + '">' + esc(data.padres) + '</p>' : '') +
       '<div class="footer-logo"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
       '<span class="shine"></span>' +
       '<span class="sparkles" aria-hidden="true">' +
@@ -329,7 +326,6 @@ import { toPng } from 'html-to-image';
       '</div></div>' +
       field('Tu nombre y apellido *', '<input required id="f-nombre" placeholder="Ej: Valentina Gómez" value="' + esc(f.nombre) + '"/>') +
       '<p class="note">📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '<br>⛪ ' + esc(PARROQUIA_EVENTO) + '<br>📍 ' + esc(DIRECCION_EVENTO) + '</p>' +
-      field('Padres', '<input id="f-padres" placeholder="Ej: Hijos de Juan y María" value="' + esc(f.padres) + '"/>') +
       field('Mensaje personalizado', '<textarea id="f-mensaje" rows="3" placeholder="' + esc(DEFAULT_MSG) + '">' + esc(f.mensaje) + '</textarea>') +
       '<div id="form-error" style="color:#a33;font-size:0.85rem"></div>' +
       '<button type="submit" class="btn" id="submit-btn"' + (canSubmit() ? '' : ' disabled') + '>' +
@@ -340,7 +336,7 @@ import { toPng } from 'html-to-image';
     );
     wireBook('preview-book');
 
-    var ids = ['nombre', 'padres', 'mensaje'];
+    var ids = ['nombre', 'mensaje'];
     ids.forEach(function (id) {
       var el = document.getElementById('f-' + id);
       el.addEventListener('input', function () {
@@ -388,7 +384,7 @@ import { toPng } from 'html-to-image';
         body: JSON.stringify({
           nombre_nino: data.nombre, fecha: data.fecha || null, hora: data.hora || null,
           parroquia: data.parroquia || null, direccion: data.direccion || null,
-          padres: data.padres || null, mensaje: data.mensaje || null, template: data.genero || null,
+          mensaje: data.mensaje || null, template: data.genero || null,
         }),
       }).catch(function () {});
     } catch (e) {}
@@ -399,7 +395,7 @@ import { toPng } from 'html-to-image';
     var f = state.form;
     var data = {
       nombre: f.nombre.trim(), fecha: f.fecha, hora: f.hora || '', parroquia: f.parroquia.trim(),
-      direccion: f.direccion.trim(), padres: f.padres.trim(), mensaje: f.mensaje.trim(),
+      direccion: f.direccion.trim(), mensaje: f.mensaje.trim(),
       genero: f.genero, codigo: f.codigo || nuevoCodigo(),
     };
     f.codigo = data.codigo;
@@ -508,7 +504,6 @@ import { toPng } from 'html-to-image';
       petals +
       '<div class="invite-book-wrap fade-up">' + bookHTML('invite-book', data) + '</div>' +
       '<div class="invite-extra">' +
-      (data.padres ? '<p style="font-size:0.85rem;color:' + t.accentDeep + ';font-style:italic;margin:6px 0 0">' + esc(data.padres) + '</p>' : '') +
       '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px">' +
       '<img src="/logo.png" alt="" style="width:16px;height:auto"/>' +
       '<p style="margin:0;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:' + t.accentDeep + ';opacity:0.8">' + esc(SCHOOL_NAME) + ' · 5° Grado B</p>' +

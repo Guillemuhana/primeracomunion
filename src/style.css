@@ -212,7 +212,6 @@ body { margin: 0; }
   }
   .page .parroquia { margin: 2% 0 0; font-size: clamp(0.66rem, 3.1cqw, 1.02rem); font-weight: 700; }
   .page .direccion { margin: 0.6% 0 0; font-size: clamp(0.58rem, 2.7cqw, 0.9rem); opacity: 0.9; }
-  .page .padres { margin: 4% 0 0; font-size: clamp(0.54rem, 2.5cqw, 0.82rem); font-style: italic; }
   .page .footer-logo {
     display: flex; align-items: center; justify-content: center; gap: 2.5%;
     margin-top: 1.8%; padding-top: 1.5%; width: 86%; flex: none;
