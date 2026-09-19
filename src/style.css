@@ -211,7 +211,7 @@ body { margin: 0; }
     min-height: 100dvh; position: relative; overflow: hidden; display: flex; flex-direction: column;
     align-items: center; text-align: center;
   }
-  .invite-screen.closed { justify-content: center; padding: 24px 16px; }
+  .invite-screen:not(.opened) { justify-content: center; }
   .petal { position: absolute; top: 0; border-radius: 50%; opacity: 0.5; pointer-events: none; }
   @keyframes driftDown {
     from { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
@@ -273,7 +273,18 @@ body { margin: 0; }
   .book.open .face.back { transform: rotateY(0deg); z-index: 2; }
   @media (min-width: 640px) { .book-wrap { max-width: 420px; margin: 0 auto; } }
 
-  .invite-book-wrap { width: 100%; max-width: 420px; margin: 0 auto; padding: 26px 18px 0; position: relative; z-index: 1; }
+  .invite-book-wrap {
+    width: 100%; margin: 0 auto; padding: 18px 12px 0; position: relative; z-index: 1;
+    box-sizing: border-box; display: flex; justify-content: center;
+  }
+  .invite-screen .book-wrap {
+    --card-w: min(calc(100vw - 24px), 420px);
+    width: var(--card-w);
+    height: min(calc(100dvh - 36px), calc(var(--card-w) * 1.77));
+  }
+  .invite-screen .book { aspect-ratio: auto; width: 100%; height: 100%; }
+  .invite-screen .cover-wrap,
+  .invite-screen .page { aspect-ratio: auto; height: 100%; }
   .invite-extra { display: none; max-width: 420px; margin: 0 auto; padding: 6px 20px 44px; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; text-align: center; }
   .invite-screen.opened .invite-extra { display: flex; }
   .petal { display: none; }
@@ -366,7 +377,7 @@ body { margin: 0; }
     .success-wrap { gap: 18px; }
     .link-row input { font-size: 0.68rem; padding: 9px 10px; }
 
-    .invite-book-wrap { padding: 16px 14px 0; }
+    .invite-book-wrap { padding: 12px 10px 0; }
     .invite-extra { padding: 6px 16px 32px; }
     .song { margin-top: 14px; }
     .song iframe { height: 165px; }
