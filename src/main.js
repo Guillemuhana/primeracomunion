@@ -241,7 +241,7 @@ import { toPng } from 'html-to-image';
       '<div class="footer-logo"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
       '<span class="shine"></span>' +
       '<span class="sparkles" aria-hidden="true">' +
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (n) { return '<i class="sp sp' + n + '" style="background:' + t.accent + '"></i>'; }).join('') +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (n) { return '<i class="sp sp' + n + '" style="color:' + t.accentDeep + '"></i>'; }).join('') +
       '</span>' +
       '</div>'
     );

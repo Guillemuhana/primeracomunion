@@ -442,11 +442,15 @@ body { margin: 0; }
   .sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
   .sparkles .sp {
     position: absolute; width: 12px; height: 12px; opacity: 0;
+    background: #ffffff;
     /* estrella de cuatro puntas */
     clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
-    filter: drop-shadow(0 0 4px currentColor);
+    color: #c9a24b;
+    filter: drop-shadow(0 0 2px #ffffff)
+            drop-shadow(0 0 6px currentColor)
+            drop-shadow(0 0 13px currentColor);
   }
-  .cover-sparkles .sp { background: #fff8e4; }
+  .cover-sparkles .sp { color: #e8c987; }
 
   /* Repartidas, con tamanos distintos para que no se note el patron */
   .sparkles .sp1  { top: 12%; left: 10%;  width: 14px; height: 14px; }
@@ -481,11 +485,11 @@ body { margin: 0; }
   .sparkles .sp12 { animation-delay: 7.6s; }
 
   @keyframes starTwinkle {
-    0%, 100%  { opacity: 0; transform: scale(0.3) rotate(0deg); }
-    4%        { opacity: 0.95; transform: scale(1.25) rotate(35deg); }
-    9%        { opacity: 0.35; transform: scale(0.9) rotate(60deg); }
-    14%       { opacity: 0.9; transform: scale(1.1) rotate(80deg); }
-    22%, 100% { opacity: 0; transform: scale(0.3) rotate(110deg); }
+    0%, 100%  { opacity: 0; transform: scale(0.2) rotate(0deg); }
+    4%        { opacity: 1; transform: scale(1.35) rotate(35deg); }
+    9%        { opacity: 0.4; transform: scale(0.9) rotate(60deg); }
+    14%       { opacity: 1; transform: scale(1.15) rotate(80deg); }
+    22%, 100% { opacity: 0; transform: scale(0.2) rotate(110deg); }
   }
 
   /* ---- Pantallas chicas ---- */
