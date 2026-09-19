@@ -287,13 +287,27 @@ import { toPng } from 'html-to-image';
   }
 
   function renderIntro() {
+    var pasos = [
+      'Elegí nene o nena y escribí el nombre',
+      'Mirá al instante cómo queda la tarjeta',
+      'Descargala o compartila por WhatsApp',
+    ];
     shell(
       '<div class="intro fade-up">' +
       '<div class="badge">' + motifSvg('calix', '#c9a24b', '#9c7a2e', 52) + '</div>' +
       '<h2 class="font-display">Armá tu tarjeta de invitación</h2>' +
-      '<p>Completá tus datos y vas a poder descargar tu invitación como imagen ' +
-      'y compartirla por WhatsApp con un link que se abre como una tarjetita animada, con música.</p>' +
+      '<p>Completá tus datos y en un minuto tenés tu invitación lista para ' +
+      'descargar como imagen o compartir con un link que se abre como una tarjeta animada.</p>' +
+      '<ol class="steps">' +
+      pasos.map(function (paso, i) {
+        return '<li><span class="step-n">' + (i + 1) + '</span><span>' + paso + '</span></li>';
+      }).join('') +
+      '</ol>' +
       '<button class="btn" id="start-btn">Comenzar ✨</button>' +
+      '<div class="event-chip">' +
+      '<span>📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '</span>' +
+      '<span>⛪ ' + esc(PARROQUIA_EVENTO) + '</span>' +
+      '</div>' +
       '</div>'
     );
     document.getElementById('start-btn').onclick = function () { state.view = 'form'; render(); };
