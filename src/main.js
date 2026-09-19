@@ -85,7 +85,15 @@ import { toPng } from 'html-to-image';
   // ---------- State ----------
   // Cancion de Apple Music. Solo suena si el invitado toca play: los navegadores
   // bloquean el autoplay con sonido en iframes de otro dominio.
-  function cancionHTML(color) {
+  // ---------- Musica ----------
+  // Si existe /cancion.mp3 en el sitio, se reproduce sola al abrir la tarjeta:
+  // el toque que la abre es el gesto que el navegador pide para habilitar
+  // audio. Si el archivo no esta, cae en el reproductor de Apple Music, que
+  // NO puede autoarrancar porque es un iframe de otro dominio.
+  var AUDIO_SRC = '/cancion.mp3';
+  var audioEl = null;
+
+  function reproductorAppleHTML(color) {
     return '<div class="song">' +
       '<p class="song-label"' + (color ? ' style="color:' + color + '"' : '') + '>♪ Tocá play para escuchar la canción</p>' +
       '<iframe class="song-frame" title="Mi Primera Comunión" loading="lazy" ' +
@@ -94,6 +102,45 @@ import { toPng } from 'html-to-image';
       'src="' + APPLE_MUSIC_SRC + '"></iframe>' +
       '</div>';
   }
+
+  function botonSilenciarHTML(color) {
+    return '<div class="song">' +
+      '<button class="song-mute" id="song-mute"' + (color ? ' style="color:' + color + '"' : '') + '>' +
+      '♪ Música · silenciar</button></div>';
+  }
+
+  // Llamar SIEMPRE dentro del gesto que abre la tarjeta.
+  function iniciarMusica(slotId, color) {
+    var hueco = document.getElementById(slotId);
+    if (!hueco || hueco.getAttribute('data-listo')) return;
+    hueco.setAttribute('data-listo', '1');
+
+    var caer = function () {
+      hueco.innerHTML = reproductorAppleHTML(color);
+    };
+
+    try {
+      audioEl = new Audio(AUDIO_SRC);
+      audioEl.loop = true;
+      audioEl.addEventListener('error', caer, { once: true });
+      var pr = audioEl.play();
+      if (pr && pr.then) {
+        pr.then(function () {
+          hueco.innerHTML = botonSilenciarHTML(color);
+          var btn = document.getElementById('song-mute');
+          btn.addEventListener('click', function () {
+            audioEl.muted = !audioEl.muted;
+            btn.textContent = audioEl.muted ? '✕ Música · activar' : '♪ Música · silenciar';
+          });
+        }, caer);
+      } else {
+        caer();
+      }
+    } catch (e) {
+      caer();
+    }
+  }
+
 
   var APPLE_MUSIC_SRC = 'https://embed.music.apple.com/es/song/mi-primera-comuni%C3%B3n/638856865';
 
@@ -395,10 +442,7 @@ import { toPng } from 'html-to-image';
       '</div>'
     );
     // El reproductor aparece recien cuando se abre la tarjeta
-    wireBook('success-book', function () {
-      var hueco = document.getElementById('song-slot');
-      if (hueco && !hueco.innerHTML) hueco.innerHTML = cancionHTML();
-    });
+    wireBook('success-book', function () { iniciarMusica('song-slot'); });
 
     // Compartir: el menu nativo del celular si existe, si no WhatsApp.
     document.getElementById('share-btn').addEventListener('click', function () {
@@ -472,7 +516,7 @@ import { toPng } from 'html-to-image';
       '<img src="/logo.png" alt="" style="width:16px;height:auto"/>' +
       '<p style="margin:0;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:' + t.accentDeep + ';opacity:0.8">' + esc(SCHOOL_NAME) + ' · 5° Grado B</p>' +
       '</div>' +
-      cancionHTML(t.accentDeep) +
+      '<div id="song-slot"></div>' +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
       creditoHTML() +
       '</div></div>';
@@ -485,6 +529,7 @@ import { toPng } from 'html-to-image';
     wireBook('invite-book', function () {
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
+      iniciarMusica('song-slot', t.accentDeep);
     });
 
     document.getElementById('share-invite-btn').addEventListener('click', function () {
