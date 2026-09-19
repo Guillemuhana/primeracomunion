@@ -298,11 +298,6 @@ body { margin: 0; }
     transition: filter 1.1s ease;
   }
   .book-wrap.is-open { filter: drop-shadow(0 40px 46px rgba(20,14,4,0.3)) drop-shadow(0 10px 16px rgba(20,14,4,0.18)) drop-shadow(0 0 22px rgba(201,162,75,0.34)); }
-  .pages-edge {
-    position: absolute; top: 1.6%; bottom: 1.6%; right: -3px; width: 9px; z-index: 0;
-    background: repeating-linear-gradient(to bottom, #fffdf8 0px, #fffdf8 2px, #e9dcc0 2px, #e9dcc0 3px);
-    border-radius: 0 7px 7px 0; box-shadow: 1px 1px 3px rgba(0,0,0,0.28), inset -1px 0 1px rgba(0,0,0,0.1);
-  }
   .book { position: relative; width: 100%; aspect-ratio: 700 / 1050; transform-style: preserve-3d; z-index: 1; }
   .book .face {
     position: absolute; inset: 0; backface-visibility: hidden; border-radius: 20px; overflow: hidden;

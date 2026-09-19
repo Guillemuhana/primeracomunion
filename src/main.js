@@ -315,7 +315,7 @@ import { toPng } from 'html-to-image';
 
   function bookHTML(id, data) {
     return (
-      '<div class="book-wrap" id="' + id + '-wrap"><div class="pages-edge"></div><div class="book" id="' + id + '">' +
+      '<div class="book-wrap" id="' + id + '-wrap"><div class="book" id="' + id + '">' +
       '<div class="face front">' + coverHTML(data, { hint: 'Toca para abrir' }) + '</div>' +
       '<div class="face back">' + pageHTML(data) + '</div>' +
       '</div></div>'
