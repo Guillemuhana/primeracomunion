@@ -339,7 +339,7 @@ import { toPng } from 'html-to-image';
       '</div></div>' +
       field('Tu nombre y apellido *', '<input required id="f-nombre" placeholder="Ej: Valentina Gómez" value="' + esc(f.nombre) + '"/>') +
       '<p class="note">📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '<br>⛪ ' + esc(PARROQUIA_EVENTO) + '<br>📍 ' + esc(DIRECCION_EVENTO) + '</p>' +
-      field('Padres / Padrinos', '<input id="f-padres" placeholder="Ej: Hijos de Juan y María · Padrinos: Ana y Luis" value="' + esc(f.padres) + '"/>') +
+      field('Padres', '<input id="f-padres" placeholder="Ej: Hijos de Juan y María" value="' + esc(f.padres) + '"/>') +
       field('Mensaje personalizado', '<textarea id="f-mensaje" rows="3" placeholder="' + esc(DEFAULT_MSG) + '">' + esc(f.mensaje) + '</textarea>') +
       '<div id="form-error" style="color:#a33;font-size:0.85rem"></div>' +
       '<button type="submit" class="btn" id="submit-btn"' + (canSubmit() ? '' : ' disabled') + '>' +
