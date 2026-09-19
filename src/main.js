@@ -83,25 +83,12 @@ import { toPng } from 'html-to-image';
   }
 
   // ---------- State ----------
-  // Cancion de Apple Music. Solo suena si el invitado toca play: los navegadores
-  // bloquean el autoplay con sonido en iframes de otro dominio.
   // ---------- Musica ----------
-  // Si existe /cancion.mp3 en el sitio, se reproduce sola al abrir la tarjeta:
-  // el toque que la abre es el gesto que el navegador pide para habilitar
-  // audio. Si el archivo no esta, cae en el reproductor de Apple Music, que
-  // NO puede autoarrancar porque es un iframe de otro dominio.
+  // Si existe /cancion.mp3 en el sitio, se reproduce sola al abrir la tarjeta
+  // y en loop: el toque que la abre es el gesto que el navegador pide para
+  // habilitar audio. Si el archivo no esta, no se muestra nada.
   var AUDIO_SRC = '/cancion.mp3';
   var audioEl = null;
-
-  function reproductorAppleHTML(color) {
-    return '<div class="song">' +
-      '<p class="song-label"' + (color ? ' style="color:' + color + '"' : '') + '>♪ Tocá play para escuchar la canción</p>' +
-      '<iframe class="song-frame" title="Mi Primera Comunión" loading="lazy" ' +
-      'allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" frameborder="0" height="175" ' +
-      'sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" ' +
-      'src="' + APPLE_MUSIC_SRC + '"></iframe>' +
-      '</div>';
-  }
 
   function botonSilenciarHTML(color) {
     return '<div class="song">' +
@@ -115,14 +102,13 @@ import { toPng } from 'html-to-image';
     if (!hueco || hueco.getAttribute('data-listo')) return;
     hueco.setAttribute('data-listo', '1');
 
-    var caer = function () {
-      hueco.innerHTML = reproductorAppleHTML(color);
-    };
+    // Sin archivo de audio no se muestra nada.
+    var sinMusica = function () { hueco.innerHTML = ''; };
 
     try {
       audioEl = new Audio(AUDIO_SRC);
       audioEl.loop = true;
-      audioEl.addEventListener('error', caer, { once: true });
+      audioEl.addEventListener('error', sinMusica, { once: true });
       var pr = audioEl.play();
       if (pr && pr.then) {
         pr.then(function () {
@@ -132,17 +118,14 @@ import { toPng } from 'html-to-image';
             audioEl.muted = !audioEl.muted;
             btn.textContent = audioEl.muted ? '✕ Música · activar' : '♪ Música · silenciar';
           });
-        }, caer);
+        }, sinMusica);
       } else {
-        caer();
+        sinMusica();
       }
     } catch (e) {
-      caer();
+      sinMusica();
     }
   }
-
-
-  var APPLE_MUSIC_SRC = 'https://embed.music.apple.com/es/song/mi-primera-comuni%C3%B3n/638856865';
 
   var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
   var FECHA_EVENTO = '2026-09-25';
