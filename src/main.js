@@ -1,5 +1,5 @@
 import './style.css';
-import { toPng } from 'html-to-image';
+import { toJpeg, getFontEmbedCSS } from 'html-to-image';
 
   var SCHOOL_NAME = 'Instituto Nuestra Señora de Fátima';
 
@@ -221,7 +221,7 @@ import { toPng } from 'html-to-image';
     var t = getPalette(data.genero);
     var mensaje = (data.mensaje || '').trim() || DEFAULT_MSG;
     return (
-      '<div class="page"' + (opts.id ? ' id="' + opts.id + '"' : '') + ' style="background:' + t.bg + ';color:' + t.ink + ';border:1px solid ' + t.accent + '55;">' +
+      '<div class="page' + (opts.cls ? ' ' + opts.cls : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + ' style="background:' + t.bg + ';color:' + t.ink + ';border:1px solid ' + t.accent + '55;">' +
       '<div class="corner tl">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner tr">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner bl">' + cornerFlourish(t.accentDeep) + '</div>' +
@@ -545,12 +545,12 @@ import { toPng } from 'html-to-image';
       '<div><p class="label preview-label">Tu invitación · tocá para abrirla</p>' + bookHTML('success-book', f) + '</div>' +
       '<div style="position:fixed;left:-9999px;top:0;width:640px">' +
       coverHTML(f, { id: 'capture-cover' }) +
-      '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside' }) + '</div>' +
+      '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside', cls: 'para-captura' }) + '</div>' +
       '</div>' +
       '<div class="actions">' +
       '<button class="btn wa" id="share-btn">Compartir</button>' +
-      '<button class="btn" id="download-btn">Descargar</button>' +
-      '<button class="btn ghost" id="print-btn">Imprimir</button>' +
+      '<button class="btn" id="jpg-btn">Descargar JPG</button>' +
+      '<button class="btn ghost" id="pdf-btn">Descargar PDF</button>' +
       '<a class="btn ghost" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer">Ver presentación</a>' +
       '</div>' +
       '<div id="song-slot"></div>' +
@@ -575,8 +575,8 @@ import { toPng } from 'html-to-image';
       }
     });
 
-    document.getElementById('download-btn').addEventListener('click', function () { downloadCard('inside', this); });
-    document.getElementById('print-btn').addEventListener('click', function () { imprimirTarjeta(f); });
+    document.getElementById('jpg-btn').addEventListener('click', function () { descargarJpg(this); });
+    document.getElementById('pdf-btn').addEventListener('click', function () { descargarPdf(this); });
     document.getElementById('again-btn').addEventListener('click', function () {
       state.form = JSON.parse(JSON.stringify(emptyForm));
       state.view = 'form';
@@ -584,67 +584,88 @@ import { toPng } from 'html-to-image';
     });
   }
 
-  // ---------- Imprimir ----------
-  // Se arma una copia limpia de la tarjeta fuera de #app y el @media print
-  // esconde todo lo demas: sale una hoja A4 con la invitacion sola.
-  function imprimirTarjeta(data) {
-    var host = document.getElementById('print-area');
-    if (!host) {
-      host = document.createElement('div');
-      host.id = 'print-area';
-      document.body.appendChild(host);
-    }
-    host.innerHTML = '<div class="print-sheet">' + pageHTML(data) + '</div>';
-
-    // Esperar a las imagenes: si se imprime antes, salen en blanco.
-    var lanzado = false;
-    var lanzar = function () {
-      if (lanzado) return;
-      lanzado = true;
-      setTimeout(function () { window.print(); }, 80);
-    };
-    var faltan = 0;
-    Array.prototype.forEach.call(host.querySelectorAll('img'), function (img) {
-      if (img.complete) return;
-      faltan++;
-      var listo = function () { if (--faltan <= 0) lanzar(); };
-      img.addEventListener('load', listo, { once: true });
-      img.addEventListener('error', listo, { once: true });
-    });
-    if (!faltan) lanzar();
-    else setTimeout(lanzar, 2500);
+  // ---------- Descargar ----------
+  function nombreArchivo(ext) {
+    var base = (state.form.nombre || '').trim().replace(/\s+/g, '-').toLowerCase() || 'invitacion';
+    return 'invitacion-' + base + '.' + ext;
   }
 
-  window.addEventListener('afterprint', function () {
-    var host = document.getElementById('print-area');
-    if (host) host.innerHTML = '';
-  });
+  // La captura sale del nodo escondido, que se renderiza fuera de .book y por
+  // eso no arrastra brillos ni la animacion de apertura.
+  // html-to-image clona la tarjeta dentro de un SVG: si las tipografias no
+  // viajan embebidas, el clon cae en la fuente por defecto y el texto sale
+  // distinto. Se piden una sola vez y se reusan.
+  var fuentesCss = null;
+  function capturaJpeg() {
+    var node = document.getElementById('capture-inside');
+    if (!node) return Promise.reject(new Error('sin tarjeta'));
+    var listas = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    return listas
+      .then(function () {
+        if (fuentesCss !== null) return fuentesCss;
+        return getFontEmbedCSS(node).then(function (css) { fuentesCss = css; return css; },
+          function () { fuentesCss = ''; return ''; });
+      })
+      .then(function (css) {
+        return toJpeg(node, {
+          pixelRatio: 3, quality: 0.95, backgroundColor: '#ffffff',
+          fontEmbedCSS: css || undefined,
+        });
+      });
+  }
 
-  function downloadCard(which, btn) {
-    var node = document.getElementById(which === 'cover' ? 'capture-cover' : 'capture-inside');
-    if (!node) return;
+  function bajarArchivo(href, nombre) {
+    var a = document.createElement('a');
+    a.href = href;
+    a.download = nombre;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function conBoton(btn, tarea) {
     var label = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Generando…';
-
     var reset = function () { btn.textContent = label; btn.disabled = false; };
+    tarea().then(reset, function (err) {
+      console.error(err);
+      reset();
+      alert('No se pudo generar el archivo. Probá de nuevo en unos segundos.');
+    });
+  }
 
-    toPng(node, { pixelRatio: 3, cacheBust: true })
-      .then(function (dataUrl) {
-        var base = state.form.nombre.trim().replace(/\s+/g, '-').toLowerCase() || 'invitacion';
-        var a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = 'invitacion-' + base + '-' + which + '.png';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        reset();
-      })
-      .catch(function (err) {
-        console.error(err);
-        reset();
-        alert('No se pudo descargar la imagen. Probá de nuevo en unos segundos.');
+  function descargarJpg(btn) {
+    conBoton(btn, function () {
+      return capturaJpeg().then(function (dataUrl) {
+        bajarArchivo(dataUrl, nombreArchivo('jpg'));
       });
+    });
+  }
+
+  // El PDF es la misma captura centrada en una hoja A4. jsPDF se carga recien
+  // cuando alguien lo pide, asi no pesa en el arranque de la pagina.
+  function descargarPdf(btn) {
+    conBoton(btn, function () {
+      return Promise.all([capturaJpeg(), import('jspdf')]).then(function (r) {
+        var dataUrl = r[0];
+        var jsPDF = r[1].jsPDF;
+        return new Promise(function (resolve, reject) {
+          var img = new Image();
+          img.onload = function () {
+            var HOJA_W = 210, HOJA_H = 297, MARGEN = 10;
+            var escala = Math.min((HOJA_W - MARGEN * 2) / img.width, (HOJA_H - MARGEN * 2) / img.height);
+            var w = img.width * escala, h = img.height * escala;
+            var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+            doc.addImage(dataUrl, 'JPEG', (HOJA_W - w) / 2, (HOJA_H - h) / 2, w, h);
+            doc.save(nombreArchivo('pdf'));
+            resolve();
+          };
+          img.onerror = reject;
+          img.src = dataUrl;
+        });
+      });
+    });
   }
 
   function renderInvite() {
@@ -673,7 +694,6 @@ import { toPng } from 'html-to-image';
       '</div>' +
       '<div id="song-slot"></div>' +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
-      '<button class="btn ghost" id="print-invite-btn" style="margin-top:10px;color:' + t.accentDeep + ';border-color:' + t.accent + '">Imprimir la tarjeta</button>' +
       creditoHTML() +
       '</div></div>';
 
@@ -688,8 +708,6 @@ import { toPng } from 'html-to-image';
       iniciarMusica('song-slot', t.accentDeep);
       escribirMensaje('invite-book');
     });
-
-    document.getElementById('print-invite-btn').addEventListener('click', function () { imprimirTarjeta(data); });
 
     document.getElementById('share-invite-btn').addEventListener('click', function () {
       var url = location.href;

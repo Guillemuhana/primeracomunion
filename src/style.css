@@ -209,9 +209,9 @@ body { margin: 0; }
   .page .spacer { flex: 1 1 0; min-height: 2px; }
   .page .spacer-top { flex: 0.8 1 0; }
   .page .when {
-    display: flex; flex-direction: column; gap: 0.6%;
-    font-size: clamp(0.72rem, 3.5cqw, 1.15rem); font-weight: 700; letter-spacing: 0.01em;
-    padding: 0.7% 4%; border-radius: 10px;
+    display: flex; flex-direction: column; gap: 0.9%;
+    font-size: clamp(0.84rem, 4.2cqw, 1.36rem); font-weight: 700; letter-spacing: 0.01em;
+    padding: 1.2% 5%; border-radius: 12px;
     background: rgba(255,255,255,0.42);
     box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22);
   }
@@ -224,6 +224,11 @@ body { margin: 0; }
   }
   .page .footer-logo img { width: clamp(18px, 5cqw, 28px); height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
   .page .footer-logo span { font-size: clamp(0.46rem, 2cqw, 0.66rem); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
+
+  /* La copia que se convierte en imagen va con alto libre: si alguna
+     tipografia no viaja al clon, el texto empuja hacia abajo en vez de
+     encimarse dentro de una tarjeta de alto fijo. */
+  .page.para-captura { aspect-ratio: auto; height: auto; min-height: 940px; }
 
   .preview-label { text-align: center; }
 
@@ -404,7 +409,7 @@ body { margin: 0; }
        minimo, asi que la tarjeta necesita casi el mismo alto en un celular
        angosto que en uno ancho. Con una proporcion fija sobraba un hueco en
        las pantallas medianas y se aplastaba la foto en las angostas. */
-    --card-h: max(615px, calc(var(--card-w) * 1.59));
+    --card-h: max(625px, calc(var(--card-w) * 1.61));
     width: var(--card-w);
     height: min(calc(100dvh - 36px), var(--card-h));
   }
@@ -667,44 +672,6 @@ body { margin: 0; }
   @media (max-width: 480px) {
     .lista-tabla table { font-size: 0.8rem; }
     .lista-tabla th, .lista-tabla td { padding: 9px 10px; }
-  }
-
-  /* ---- Imprimir la tarjeta ---- */
-  /* La copia para imprimir vive fuera de #app y solo existe mientras dura el
-     dialogo de impresion. En pantalla no se ve nunca. */
-  /* Fuera de pantalla en vez de display:none: asi el navegador baja las
-     imagenes y los fondos antes de abrir el dialogo de impresion. */
-  #print-area {
-    /* 165mm de ancho -> 247mm de alto: entra en A4 con margen y a ese tamaño
-       las tipografias llegan a su maximo sin dejar huecos. */
-    position: fixed; left: -10000px; top: 0; width: 165mm;
-    opacity: 0; pointer-events: none; z-index: -1;
-  }
-
-  @media print {
-    @page { size: A4 portrait; margin: 8mm; }
-    html, body { background: #fff !important; overflow: visible !important; max-width: none !important; }
-    body > *:not(#print-area) { display: none !important; }
-    #print-area {
-      position: static !important; left: auto !important; width: auto !important;
-      opacity: 1 !important; z-index: auto !important;
-    }
-
-    .print-sheet {
-      width: 165mm; max-width: 100%; margin: 0 auto;
-      break-inside: avoid; page-break-inside: avoid;
-    }
-    /* Sin esto los navegadores descartan fondos y la tarjeta sale en blanco. */
-    .print-sheet, .print-sheet * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    .print-sheet .page {
-      box-shadow: none !important;
-      break-inside: avoid; page-break-inside: avoid;
-    }
-    /* Brillos y destellos no aportan nada en papel. */
-    .print-sheet .shine, .print-sheet .sparkles { display: none !important; }
   }
 
   /* ---- Mensaje que se escribe solo ---- */
