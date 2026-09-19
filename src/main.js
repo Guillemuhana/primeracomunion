@@ -138,7 +138,14 @@ import { toPng } from 'html-to-image';
 
   function startMusic() {
     ensureCtx();
-    if (actx.state === 'suspended') actx.resume();
+    // resume() puede quedar pendiente o fallar segun el navegador, asi que
+    // reintentamos cuando termine y dejamos el respaldo por interaccion.
+    if (actx.state === 'suspended') {
+      try {
+        var r = actx.resume();
+        if (r && r.then) r.then(function () {}, function () {});
+      } catch (e) {}
+    }
     if (running) return;
     running = true;
     padOsc = CHORD.map(function (freq, i) {
@@ -171,7 +178,10 @@ import { toPng } from 'html-to-image';
   }
 
   function desbloquearAudio() {
-    if (actx && running && actx.state === 'suspended') actx.resume();
+    if (!actx) return;
+    if (actx.state === 'suspended') {
+      try { actx.resume(); } catch (e) {}
+    }
   }
   ['pointerdown', 'touchend', 'keydown'].forEach(function (ev) {
     document.addEventListener(ev, desbloquearAudio, { passive: true });
@@ -567,17 +577,6 @@ import { toPng } from 'html-to-image';
       document.querySelector('.invite-screen').classList.add('opened');
       if (state.musicOn) startMusic();
     });
-
-    var songFrame = document.getElementById('song-frame');
-    var onBlur = function () {
-      if (document.activeElement === songFrame && state.musicOn) {
-        stopMusic();
-        state.musicOn = false;
-        var tg = document.getElementById('music-toggle');
-        if (tg) tg.textContent = '✕';
-      }
-    };
-    window.addEventListener('blur', onBlur);
 
     document.getElementById('music-toggle').addEventListener('click', function (e) {
       if (state.musicOn) { stopMusic(); state.musicOn = false; } else { startMusic(); state.musicOn = true; }
