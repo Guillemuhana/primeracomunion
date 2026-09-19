@@ -279,6 +279,18 @@ body { margin: 0; }
   .petal { display: none; }
   .invite-screen.opened .petal { display: block; }
 
+  /* ---- Cancion (Apple Music) ---- */
+  .song { width: 100%; margin-top: 18px; }
+  .song-label {
+    margin: 0 0 8px; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 800; opacity: 0.85;
+  }
+  .song iframe {
+    width: 100%; max-width: 420px; height: 175px; border: 0; overflow: hidden;
+    border-radius: 12px; background: transparent;
+    box-shadow: 0 10px 26px -14px rgba(20,14,4,0.45);
+  }
+
   /* ---- Brillo de la tarjeta abierta ---- */
   /* Solo se anima bajo .book.open, asi que la imagen descargada sale limpia. */
   .page .shine {
@@ -356,6 +368,8 @@ body { margin: 0; }
 
     .invite-book-wrap { padding: 16px 14px 0; }
     .invite-extra { padding: 6px 16px 32px; }
+    .song { margin-top: 14px; }
+    .song iframe { height: 165px; }
     .music-toggle { width: 36px; height: 36px; right: 12px; }
   }
 

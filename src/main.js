@@ -146,6 +146,10 @@ import { toPng } from 'html-to-image';
   }
 
   // ---------- State ----------
+  // Cancion de Apple Music. Solo suena si el invitado toca play: los navegadores
+  // bloquean el autoplay con sonido en iframes de otro dominio.
+  var APPLE_MUSIC_SRC = 'https://embed.music.apple.com/es/song/mi-primera-comuni%C3%B3n/638856865';
+
   var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
   var FECHA_EVENTO = '2026-09-25';
   var HORA_EVENTO = '19:00';
@@ -513,6 +517,10 @@ import { toPng } from 'html-to-image';
       '<img src="/logo.png" alt="" style="width:16px;height:auto"/>' +
       '<p style="margin:0;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:' + t.accentDeep + ';opacity:0.8">' + esc(SCHOOL_NAME) + ' · 5° Grado B</p>' +
       '</div>' +
+      '<div class="song">' +
+      '<p class="song-label" style="color:' + t.accentDeep + '">♪ Escuchá la canción</p>' +
+      '<iframe id="song-frame" title="Mi Primera Comunión" loading="lazy" allow="autoplay *; encrypted-media *; clipboard-write" frameborder="0" height="175" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="' + APPLE_MUSIC_SRC + '"></iframe>' +
+      '</div>' +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
       creditoHTML() +
       '</div></div>';
@@ -527,6 +535,17 @@ import { toPng } from 'html-to-image';
       document.querySelector('.invite-screen').classList.add('opened');
       if (state.musicOn) startMusic();
     });
+
+    var songFrame = document.getElementById('song-frame');
+    var onBlur = function () {
+      if (document.activeElement === songFrame && state.musicOn) {
+        stopMusic();
+        state.musicOn = false;
+        var tg = document.getElementById('music-toggle');
+        if (tg) tg.textContent = '✕';
+      }
+    };
+    window.addEventListener('blur', onBlur);
 
     document.getElementById('music-toggle').addEventListener('click', function (e) {
       if (state.musicOn) { stopMusic(); state.musicOn = false; } else { startMusic(); state.musicOn = true; }
