@@ -256,6 +256,46 @@ import { toPng } from 'html-to-image';
     );
   }
 
+  // Escribe el mensaje letra por letra al abrir la tarjeta.
+  // Las letras ya estan en el DOM desde el arranque, solo en opacity 0: asi
+  // no hay reflujo y el texto no empuja al resto mientras aparece. Se agrupa
+  // por palabra para que los cortes de linea sigan cayendo donde corresponde.
+  function escribirMensaje(bookId) {
+    var msg = document.querySelector('#' + bookId + ' .msg');
+    if (!msg || msg.getAttribute('data-escrito')) return;
+    msg.setAttribute('data-escrito', '1');
+
+    var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (quieto) return;
+
+    var texto = msg.textContent;
+    msg.textContent = '';
+    var letras = [];
+    texto.split(' ').forEach(function (palabra, i) {
+      if (i) msg.appendChild(document.createTextNode(' '));
+      var w = document.createElement('span');
+      w.className = 'w';
+      palabra.split('').forEach(function (c) {
+        var ch = document.createElement('span');
+        ch.className = 'ch';
+        ch.textContent = c;
+        w.appendChild(ch);
+        letras.push(ch);
+      });
+      msg.appendChild(w);
+    });
+
+    msg.classList.add('escribiendo');
+    var i = 0;
+    var id = setInterval(function () {
+      for (var n = 0; n < 2 && i < letras.length; n++, i++) letras[i].classList.add('on');
+      if (i >= letras.length) {
+        clearInterval(id);
+        msg.classList.remove('escribiendo');
+      }
+    }, 26);
+  }
+
   function wireBook(id, onOpen) {
     var book = document.getElementById(id);
     var wrap = document.getElementById(id + '-wrap');
@@ -438,7 +478,10 @@ import { toPng } from 'html-to-image';
       '</div>'
     );
     // El reproductor aparece recien cuando se abre la tarjeta
-    wireBook('success-book', function () { iniciarMusica('song-slot'); });
+    wireBook('success-book', function () {
+      iniciarMusica('song-slot');
+      escribirMensaje('success-book');
+    });
 
     // Compartir: el menu nativo del celular si existe, si no WhatsApp.
     document.getElementById('share-btn').addEventListener('click', function () {
@@ -525,6 +568,7 @@ import { toPng } from 'html-to-image';
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
       iniciarMusica('song-slot', t.accentDeep);
+      escribirMensaje('invite-book');
     });
 
     document.getElementById('share-invite-btn').addEventListener('click', function () {

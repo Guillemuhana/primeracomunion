@@ -596,3 +596,25 @@ body { margin: 0; }
   @media (pointer: coarse) {
     .btn, .gender-btn, .linklike, .song-mute { min-height: 44px; }
   }
+
+  /* ---- Mensaje que se escribe solo ---- */
+  /* Scopeado a .book: la captura que se descarga se renderiza fuera y por
+     eso conserva el texto completo, sin spans ni animacion. */
+  .book .page .msg .w { display: inline-block; }
+  .book .page .msg .ch { opacity: 0; }
+  .book .page .msg .ch.on { opacity: 1; transition: opacity 0.14s ease; }
+
+  /* El cursor reemplaza la comilla de cierre mientras escribe */
+  .book .page .msg.escribiendo::after {
+    content: '\258C'; opacity: 0.65; font-style: normal;
+    animation: caretBlink 0.75s steps(1) infinite;
+  }
+  @keyframes caretBlink {
+    0%, 49%   { opacity: 0.65; }
+    50%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .book .page .msg .ch { opacity: 1; }
+    .book .page .msg.escribiendo::after { animation: none; content: '\201D'; }
+  }
