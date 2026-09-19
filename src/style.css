@@ -144,7 +144,7 @@ body { margin: 0; }
 
   /* ---- Inside page ---- */
   .page {
-    aspect-ratio: 700 / 1050; width: 100%; border-radius: 20px; padding: 4% 7.5% 3.5%;
+    aspect-ratio: 700 / 1050; width: 100%; border-radius: 20px; padding: 2.4% 7% 2.2%;
     display: flex; flex-direction: column; align-items: center; text-align: center;
     position: relative; overflow: hidden; box-shadow: 0 24px 54px -22px rgba(0,0,0,0.42);
     container-type: inline-size;
@@ -167,46 +167,46 @@ body { margin: 0; }
   .page .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
   .page .corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
 
-  .page .school { display: flex; flex-direction: column; align-items: center; gap: 0.8%; margin-bottom: 2%; flex: none; }
+  .page .school { display: flex; flex-direction: column; align-items: center; gap: 0.5%; margin-bottom: 1.4%; flex: none; }
   .page .school span { font-size: clamp(0.52rem, 2.5cqw, 0.8rem); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; opacity: 0.95; line-height: 1.3; text-align: center; }
   .page .school img { width: clamp(44px, 13cqw, 78px); height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22)); }
 
   .page .church-banner {
-    width: 90%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
-    margin: 0 0 2.5%; flex: 0 1 auto; min-height: 0;
+    width: 88%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
+    margin: 0 0 1.8%; flex: 0 1 auto; min-height: 0;
     box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
   .page .church-banner img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
-  .page .parroquia-logo { width: clamp(58px, 15cqw, 88px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+  .page .parroquia-logo { width: clamp(74px, 20cqw, 118px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.72rem, 3.4cqw, 1.15rem); font-weight: 600;
-    letter-spacing: 0.1em; margin: 0 0 1%; display: flex; align-items: center; justify-content: center; gap: 2.5cqw;
+    letter-spacing: 0.1em; margin: 0 0 0.4%; display: flex; align-items: center; justify-content: center; gap: 2.5cqw;
   }
   .page .kicker i { display: block; width: clamp(12px, 5cqw, 26px); height: 1px; opacity: 0.7; font-style: normal; }
   .page h2 {
-    font-size: clamp(1.3rem, 9.8cqw, 3.1rem); font-weight: 600; margin: 0.8% 0 1.2%; line-height: 1.02;
+    font-size: clamp(1.28rem, 9.4cqw, 3rem); font-weight: 600; margin: 0.6% 0 1%; line-height: 1.02;
     text-shadow: 0 1px 2px rgba(255,255,255,0.6);
     letter-spacing: -0.01em; word-break: break-word;
   }
-  .page .rule { margin: 0 0 1.8%; display: flex; align-items: center; justify-content: center; gap: 3%; }
+  .page .rule { margin: 0 0 0.7%; display: flex; align-items: center; justify-content: center; gap: 3%; }
   /* Lineas finas a los lados del rombo */
   .page .rule::before, .page .rule::after {
     content: ''; display: block; width: 14%; height: 1px; opacity: 0.45;
     background: currentColor;
   }
   .page .msg {
-    font-style: italic; font-size: clamp(0.68rem, 3.05cqw, 1.05rem); line-height: 1.48; margin: 0; max-width: 92%;
+    font-style: italic; font-size: clamp(0.8rem, 3.7cqw, 1.28rem); line-height: 1.5; margin: 0; max-width: 92%;
     position: relative; opacity: 0.95;
   }
   .page .msg::before { content: '“'; }
   .page .msg::after { content: '”'; }
-  .page .divider-motif { margin: 0.6% 0; opacity: 0.85; flex: none; transform: scale(0.85); }
-  .page .spacer { flex: 1; min-height: 6px; }
+  .page .divider-motif { margin: 0; opacity: 0.85; flex: none; transform: scale(0.6); }
+  .page .spacer { flex: 1; min-height: 2px; }
   .page .when {
     display: flex; flex-direction: column; gap: 0.6%;
     font-size: clamp(0.72rem, 3.5cqw, 1.15rem); font-weight: 700; letter-spacing: 0.01em;
-    padding: 1.4% 4.5%; border-radius: 10px;
+    padding: 1.1% 4%; border-radius: 10px;
     background: rgba(255,255,255,0.42);
     box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22);
   }
@@ -214,10 +214,10 @@ body { margin: 0; }
   .page .direccion { margin: 0.6% 0 0; font-size: clamp(0.58rem, 2.7cqw, 0.9rem); opacity: 0.9; }
   .page .footer-logo {
     display: flex; align-items: center; justify-content: center; gap: 2.5%;
-    margin-top: 1.8%; padding-top: 1.5%; width: 86%; flex: none;
+    margin-top: 1.2%; padding-top: 1%; width: 86%; flex: none;
     border-top: 1px solid rgba(160,125,55,0.25);
   }
-  .page .footer-logo img { width: clamp(22px, 6.5cqw, 36px); height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
+  .page .footer-logo img { width: clamp(20px, 5.8cqw, 32px); height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
   .page .footer-logo span { font-size: clamp(0.46rem, 2cqw, 0.66rem); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
 
   .preview-label { text-align: center; }
