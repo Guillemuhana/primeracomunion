@@ -438,62 +438,54 @@ body { margin: 0; }
     100%     { opacity: 0; transform: translateX(300%) rotate(4deg); }
   }
 
-  .page .sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-  .page .sparkles .sp {
-    position: absolute; width: 6px; height: 6px; border-radius: 50%; opacity: 0;
-    box-shadow: 0 0 10px 2px currentColor;
+  /* ---- Destellos tipo estrella ---- */
+  .sparkles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+  .sparkles .sp {
+    position: absolute; width: 12px; height: 12px; opacity: 0;
+    /* estrella de cuatro puntas */
+    clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+    filter: drop-shadow(0 0 4px currentColor);
   }
-  .page .sparkles .sp1 { top: 16%; left: 12%; }
-  .page .sparkles .sp2 { top: 28%; right: 14%; width: 4px; height: 4px; }
-  .page .sparkles .sp3 { top: 52%; left: 8%;  width: 3px; height: 3px; }
-  .page .sparkles .sp4 { top: 63%; right: 10%; }
-  .page .sparkles .sp5 { bottom: 16%; left: 20%; width: 4px; height: 4px; }
-  .page .sparkles .sp6 { bottom: 24%; right: 22%; width: 3px; height: 3px; }
+  .cover-sparkles .sp { background: #fff8e4; }
 
-  .book.open .page .sparkles .sp { animation: twinkle 2.8s ease-in-out infinite; }
-  .book.open .page .sparkles .sp1 { animation-delay: 1.0s; }
-  .book.open .page .sparkles .sp2 { animation-delay: 1.5s; }
-  .book.open .page .sparkles .sp3 { animation-delay: 2.1s; }
-  .book.open .page .sparkles .sp4 { animation-delay: 1.3s; }
-  .book.open .page .sparkles .sp5 { animation-delay: 2.4s; }
-  .book.open .page .sparkles .sp6 { animation-delay: 1.8s; }
+  /* Repartidas, con tamanos distintos para que no se note el patron */
+  .sparkles .sp1  { top: 12%; left: 10%;  width: 14px; height: 14px; }
+  .sparkles .sp2  { top: 22%; right: 12%; width: 10px; height: 10px; }
+  .sparkles .sp3  { top: 38%; left: 7%;   width: 8px;  height: 8px;  }
+  .sparkles .sp4  { top: 30%; right: 8%;  width: 13px; height: 13px; }
+  .sparkles .sp5  { top: 54%; left: 14%;  width: 9px;  height: 9px;  }
+  .sparkles .sp6  { top: 62%; right: 16%; width: 12px; height: 12px; }
+  .sparkles .sp7  { top: 47%; right: 22%; width: 7px;  height: 7px;  }
+  .sparkles .sp8  { bottom: 28%; left: 9%; width: 11px; height: 11px; }
+  .sparkles .sp9  { bottom: 18%; right: 11%; width: 9px; height: 9px; }
+  .sparkles .sp10 { bottom: 34%; right: 28%; width: 8px; height: 8px; }
+  .sparkles .sp11 { top: 18%; left: 30%;  width: 7px;  height: 7px;  }
+  .sparkles .sp12 { bottom: 12%; left: 24%; width: 10px; height: 10px; }
 
-  @keyframes twinkle {
-    0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-    50%      { opacity: 1; transform: scale(1.35) rotate(45deg); }
-  }
+  /* Ciclo largo: cada una brilla un instante y descansa, asi aparecen de a
+     poco en vez de titilar todas juntas. */
+  .book.open .page .sparkles .sp,
+  .book:not(.open) .cover-sparkles .sp { animation: starTwinkle 9s ease-in-out infinite; }
 
-  /* Destello que cruza la tapa cerrada */
-  .book:not(.open) .cover-wrap::after {
-    content: ''; position: absolute; top: -30%; bottom: -30%; left: 0; width: 38%;
-    pointer-events: none; z-index: 2;
-    background: linear-gradient(100deg,
-      transparent 0%, rgba(255,255,255,0.12) 30%, rgba(255,255,255,0.62) 50%,
-      rgba(255,255,255,0.12) 70%, transparent 100%);
-    transform: translateX(-220%) rotate(6deg);
-    animation: coverSheen 5s ease-in-out 1.2s infinite;
-  }
-  @keyframes coverSheen {
-    0%        { opacity: 0; transform: translateX(-220%) rotate(6deg); }
-    5%        { opacity: 1; }
-    33%       { opacity: 1; }
-    38%, 100% { opacity: 0; transform: translateX(330%) rotate(6deg); }
-  }
+  .sparkles .sp1  { animation-delay: 0.6s; }
+  .sparkles .sp2  { animation-delay: 2.4s; }
+  .sparkles .sp3  { animation-delay: 4.1s; }
+  .sparkles .sp4  { animation-delay: 1.5s; }
+  .sparkles .sp5  { animation-delay: 5.8s; }
+  .sparkles .sp6  { animation-delay: 3.2s; }
+  .sparkles .sp7  { animation-delay: 7.1s; }
+  .sparkles .sp8  { animation-delay: 6.3s; }
+  .sparkles .sp9  { animation-delay: 2.9s; }
+  .sparkles .sp10 { animation-delay: 8.2s; }
+  .sparkles .sp11 { animation-delay: 4.9s; }
+  .sparkles .sp12 { animation-delay: 7.6s; }
 
-  /* Los motivos dorados palpitan apenas */
-  .book.open .page .rule svg,
-  .book.open .page .divider-motif { animation: goldGlow 3.6s ease-in-out infinite; }
-  @keyframes goldGlow {
-    0%, 100% { filter: drop-shadow(0 0 0 transparent); opacity: 0.85; }
-    50%      { filter: drop-shadow(0 0 7px rgba(201,162,75,0.85)); opacity: 1; }
-  }
-
-  /* El bloque de fecha y hora, con un resplandor suave */
-  .book.open .page .when { animation: whenGlow 4.2s ease-in-out 1s infinite; }
-  @keyframes whenGlow {
-    0%, 100% { box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22); }
-    50%      { box-shadow: inset 0 0 0 1px rgba(160,125,55,0.5),
-                           0 0 18px -4px rgba(201,162,75,0.45); }
+  @keyframes starTwinkle {
+    0%, 100%  { opacity: 0; transform: scale(0.3) rotate(0deg); }
+    4%        { opacity: 0.95; transform: scale(1.25) rotate(35deg); }
+    9%        { opacity: 0.35; transform: scale(0.9) rotate(60deg); }
+    14%       { opacity: 0.9; transform: scale(1.1) rotate(80deg); }
+    22%, 100% { opacity: 0; transform: scale(0.3) rotate(110deg); }
   }
 
   /* ---- Pantallas chicas ---- */
