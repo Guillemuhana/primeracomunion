@@ -169,15 +169,15 @@ body { margin: 0; }
 
   .page .school { display: flex; flex-direction: column; align-items: center; gap: 0.8%; margin-bottom: 2%; flex: none; }
   .page .school span { font-size: clamp(0.52rem, 2.5cqw, 0.8rem); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; opacity: 0.95; line-height: 1.3; text-align: center; }
-  .page .school img { height: 7%; width: auto; max-width: 22%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22)); }
+  .page .school img { width: clamp(46px, 15cqw, 88px); height: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.22)); }
 
   .page .church-banner {
-    height: 22%; width: auto; max-width: 100%; aspect-ratio: 900 / 506;
-    border-radius: 12px; overflow: hidden; margin: 0 0 3%; flex: 0 1 auto; min-height: 0;
+    width: 100%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
+    margin: 0 0 3%; flex: 0 1 auto; min-height: 0;
     box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
-  .page .church-banner img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .page .parroquia-logo { height: 8.5%; width: auto; max-width: 34%; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+  .page .church-banner img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .page .parroquia-logo { width: clamp(80px, 25cqw, 145px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.72rem, 3.4cqw, 1.15rem); font-weight: 600;
@@ -218,7 +218,7 @@ body { margin: 0; }
     margin-top: 2.5%; padding-top: 2%; width: 86%; flex: none;
     border-top: 1px solid rgba(160,125,55,0.25);
   }
-  .page .footer-logo img { height: 3.6%; width: auto; max-width: 12%; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
+  .page .footer-logo img { width: clamp(26px, 8cqw, 46px); height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.16)); }
   .page .footer-logo span { font-size: clamp(0.46rem, 2cqw, 0.66rem); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; opacity: 0.8; }
 
   .preview-label { text-align: center; }
@@ -500,3 +500,10 @@ body { margin: 0; }
     .invite-extra .btn::after, .intro .badge { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
   }
+
+  #music-toggle-success {
+    position: absolute; top: 8px; right: 8px; width: 38px; height: 38px;
+    border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+    color: var(--gold-deep); background: var(--surface);
+  }
+  .success-wrap { position: relative; }

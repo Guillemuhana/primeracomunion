@@ -481,6 +481,7 @@ import { toPng } from 'html-to-image';
       coverHTML(f, { id: 'capture-cover' }) +
       '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside' }) + '</div>' +
       '</div>' +
+      '<button class="music-toggle" id="music-toggle-success" title="Musica">♪</button>' +
       '<div class="actions">' +
       '<button class="btn wa" id="share-btn">Compartir</button>' +
       '<button class="btn" id="download-btn">Descargar</button>' +
@@ -489,7 +490,16 @@ import { toPng } from 'html-to-image';
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
       '</div>'
     );
-    wireBook('success-book');
+    // Al abrir la tarjeta arranca la musica: el toque que la abre es el gesto
+    // que el navegador pide para habilitar audio.
+    state.musicOn = true;
+    wireBook('success-book', function () { startMusic(); });
+
+    document.getElementById('music-toggle-success').addEventListener('click', function (e) {
+      if (state.musicOn) { stopMusic(); state.musicOn = false; }
+      else { startMusic(); state.musicOn = true; }
+      e.currentTarget.textContent = state.musicOn ? '♪' : '✕';
+    });
 
     // Compartir: el menu nativo del celular si existe, si no WhatsApp.
     document.getElementById('share-btn').addEventListener('click', function () {
