@@ -191,6 +191,7 @@ import { toPng } from 'html-to-image';
   }
 
   var params = new URLSearchParams(location.search);
+  if (params.has('lista')) state.view = 'lista';
   var incoming = leerInvitacion(params);
   if (incoming && incoming.nombre) {
     state.view = 'invite';
@@ -231,6 +232,7 @@ import { toPng } from 'html-to-image';
       '<p class="kicker" style="color:' + t.accentDeep + '"><i style="background:' + t.accent + '"></i>En su Primera Comunión<i style="background:' + t.accent + '"></i></p>' +
       '<h2 class="font-display">' + (esc(data.nombre) || 'Nombre del niño/a') + '</h2>' +
       '<div class="rule"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="' + t.accent + '"/></svg></div>' +
+      '<div class="spacer spacer-top"></div>' +
       '<p class="msg font-display">' + esc(mensaje) + '</p>' +
       '<div class="divider-motif">' + motifSvg('cruz', t.accent, t.accentDeep, 30) + '</div>' +
       '<div class="spacer"></div>' +
@@ -287,13 +289,14 @@ import { toPng } from 'html-to-image';
 
     msg.classList.add('escribiendo');
     var i = 0;
+    // Una letra por vez y con mas pausa: se lee mientras se escribe.
     var id = setInterval(function () {
-      for (var n = 0; n < 2 && i < letras.length; n++, i++) letras[i].classList.add('on');
+      if (i < letras.length) letras[i++].classList.add('on');
       if (i >= letras.length) {
         clearInterval(id);
         msg.classList.remove('escribiendo');
       }
-    }, 26);
+    }, 34);
   }
 
   function wireBook(id, onOpen) {
@@ -313,6 +316,7 @@ import { toPng } from 'html-to-image';
     else if (state.view === 'form' || state.view === 'saving') renderForm();
     else if (state.view === 'success') renderSuccess();
     else if (state.view === 'invite') renderInvite();
+    else if (state.view === 'lista') renderLista();
   }
 
   function creditoHTML() {
@@ -326,6 +330,18 @@ import { toPng } from 'html-to-image';
       '<main class="wrap"><div class="col">' + inner + '</div></main>' + creditoHTML();
   }
 
+  // Motas de luz que suben despacio detras del home.
+  function motasHTML(cuantas) {
+    var out = '';
+    for (var i = 0; i < cuantas; i++) {
+      out += '<i class="mote" style="left:' + ((i * 37 + 6) % 100) + '%;' +
+        'width:' + (4 + (i % 4) * 3) + 'px;height:' + (4 + (i % 4) * 3) + 'px;' +
+        'animation-duration:' + (16 + (i % 5) * 4) + 's;' +
+        'animation-delay:' + ((i * 2.3) % 15).toFixed(1) + 's"></i>';
+    }
+    return '<div class="home-fx" aria-hidden="true">' + out + '</div>';
+  }
+
   function renderIntro() {
     var pasos = [
       'Elegí nene o nena y escribí el nombre',
@@ -333,7 +349,8 @@ import { toPng } from 'html-to-image';
       'Descargala o compartila por WhatsApp',
     ];
     shell(
-      '<div class="intro fade-up">' +
+      motasHTML(14) +
+      '<div class="intro home-intro">' +
       '<div class="badge">' + motifSvg('calix', '#c9a24b', '#9c7a2e', 52) + '</div>' +
       '<h2 class="font-display">Armá tu tarjeta de invitación</h2>' +
       '<p>Completá tus datos y en un minuto tenés tu invitación lista para ' +
@@ -433,6 +450,68 @@ import { toPng } from 'html-to-image';
     } catch (e) {}
   }
 
+  // ---------- Quien fue creando tarjetas ----------
+  // /?lista=1 lee la misma tabla donde registrarUso() guarda cada invitacion.
+  function fechaCorta(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    var dosDigitos = function (n) { return (n < 10 ? '0' : '') + n; };
+    return dosDigitos(d.getDate()) + '/' + dosDigitos(d.getMonth() + 1) + ' · ' +
+      dosDigitos(d.getHours()) + ':' + dosDigitos(d.getMinutes());
+  }
+
+  function renderLista() {
+    shell('<div class="fade-up lista" id="lista"><p class="label">Cargando…</p></div>');
+    fetch(SUPABASE_URL + '/rest/v1/invitaciones_comunion?select=nombre_nino,template,created_at&order=created_at.desc', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(pintarLista)
+      .catch(function () {
+        document.getElementById('lista').innerHTML =
+          '<p class="note">No se pudo leer la lista. Probá recargar en unos segundos.</p>';
+      });
+  }
+
+  function pintarLista(filas) {
+    filas = filas || [];
+    var vistos = {};
+    filas.forEach(function (f) {
+      var n = (f.nombre_nino || '').trim().toLowerCase();
+      if (n) vistos[n] = 1;
+    });
+    var unicos = Object.keys(vistos).length;
+
+    var cuerpo = filas.length
+      ? filas.map(function (f) {
+          return '<tr><td>' + (esc(f.nombre_nino) || '—') + '</td>' +
+            '<td>' + (f.template === 'nene' ? 'Nene' : f.template === 'nena' ? 'Nena' : '—') + '</td>' +
+            '<td>' + esc(fechaCorta(f.created_at)) + '</td></tr>';
+        }).join('')
+      : '<tr><td colspan="3">Todavía no creó una tarjeta nadie.</td></tr>';
+
+    document.getElementById('lista').innerHTML =
+      '<h2 class="font-display" style="margin:0 0 4px">Tarjetas creadas</h2>' +
+      '<p class="note lista-resumen">' + filas.length + ' tarjeta' + (filas.length === 1 ? '' : 's') +
+      ' · ' + unicos + ' chico' + (unicos === 1 ? '' : 's') + ' distinto' + (unicos === 1 ? '' : 's') + '</p>' +
+      '<div class="lista-tabla"><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Cuándo</th></tr></thead>' +
+      '<tbody>' + cuerpo + '</tbody></table></div>' +
+      '<button class="btn ghost" id="csv-btn">Descargar CSV</button>';
+
+    document.getElementById('csv-btn').addEventListener('click', function () {
+      var csv = 'nombre,tipo,creada\n' + filas.map(function (f) {
+        return '"' + String(f.nombre_nino || '').replace(/"/g, '""') + '","' +
+          (f.template || '') + '","' + (f.created_at || '') + '"';
+      }).join('\n');
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      a.download = 'tarjetas-comunion.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+  }
+
   function submitForm() {
     if (!canSubmit()) return;
     var f = state.form;
@@ -471,6 +550,7 @@ import { toPng } from 'html-to-image';
       '<div class="actions">' +
       '<button class="btn wa" id="share-btn">Compartir</button>' +
       '<button class="btn" id="download-btn">Descargar</button>' +
+      '<button class="btn ghost" id="print-btn">Imprimir</button>' +
       '<a class="btn ghost" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer">Ver presentación</a>' +
       '</div>' +
       '<div id="song-slot"></div>' +
@@ -496,12 +576,49 @@ import { toPng } from 'html-to-image';
     });
 
     document.getElementById('download-btn').addEventListener('click', function () { downloadCard('inside', this); });
+    document.getElementById('print-btn').addEventListener('click', function () { imprimirTarjeta(f); });
     document.getElementById('again-btn').addEventListener('click', function () {
       state.form = JSON.parse(JSON.stringify(emptyForm));
       state.view = 'form';
       render();
     });
   }
+
+  // ---------- Imprimir ----------
+  // Se arma una copia limpia de la tarjeta fuera de #app y el @media print
+  // esconde todo lo demas: sale una hoja A4 con la invitacion sola.
+  function imprimirTarjeta(data) {
+    var host = document.getElementById('print-area');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'print-area';
+      document.body.appendChild(host);
+    }
+    host.innerHTML = '<div class="print-sheet">' + pageHTML(data) + '</div>';
+
+    // Esperar a las imagenes: si se imprime antes, salen en blanco.
+    var lanzado = false;
+    var lanzar = function () {
+      if (lanzado) return;
+      lanzado = true;
+      setTimeout(function () { window.print(); }, 80);
+    };
+    var faltan = 0;
+    Array.prototype.forEach.call(host.querySelectorAll('img'), function (img) {
+      if (img.complete) return;
+      faltan++;
+      var listo = function () { if (--faltan <= 0) lanzar(); };
+      img.addEventListener('load', listo, { once: true });
+      img.addEventListener('error', listo, { once: true });
+    });
+    if (!faltan) lanzar();
+    else setTimeout(lanzar, 2500);
+  }
+
+  window.addEventListener('afterprint', function () {
+    var host = document.getElementById('print-area');
+    if (host) host.innerHTML = '';
+  });
 
   function downloadCard(which, btn) {
     var node = document.getElementById(which === 'cover' ? 'capture-cover' : 'capture-inside');
@@ -556,6 +673,7 @@ import { toPng } from 'html-to-image';
       '</div>' +
       '<div id="song-slot"></div>' +
       '<button class="btn" id="share-invite-btn" style="margin-top:20px;background:' + t.accentDeep + ';color:' + t.bg + '">Compartir esta invitación</button>' +
+      '<button class="btn ghost" id="print-invite-btn" style="margin-top:10px;color:' + t.accentDeep + ';border-color:' + t.accent + '">Imprimir la tarjeta</button>' +
       creditoHTML() +
       '</div></div>';
 
@@ -570,6 +688,8 @@ import { toPng } from 'html-to-image';
       iniciarMusica('song-slot', t.accentDeep);
       escribirMensaje('invite-book');
     });
+
+    document.getElementById('print-invite-btn').addEventListener('click', function () { imprimirTarjeta(data); });
 
     document.getElementById('share-invite-btn').addEventListener('click', function () {
       var url = location.href;

@@ -176,8 +176,10 @@ body { margin: 0; }
     margin: 0 0 1.5%; flex: 0 1 auto; min-height: 0;
     box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
-  .page .church-banner img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
-  .page .parroquia-logo { width: clamp(92px, 25cqw, 146px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+  /* cover, no contain: si la tarjeta se achica el recuadro se acorta y con
+     contain quedaban franjas blancas a los costados de la foto. */
+  .page .church-banner img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+  .page .parroquia-logo { width: clamp(110px, 30cqw, 175px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.72rem, 3.4cqw, 1.15rem); font-weight: 600;
@@ -196,13 +198,16 @@ body { margin: 0; }
     background: currentColor;
   }
   .page .msg {
-    font-style: italic; font-size: clamp(1.02rem, 5cqw, 1.7rem); line-height: 1.38; margin: 0; max-width: 97%;
+    font-style: italic; font-size: clamp(1.12rem, 5.5cqw, 1.85rem); line-height: 1.36; margin: 0; max-width: 97%;
     position: relative; opacity: 0.95;
   }
   .page .msg::before { content: '“'; }
   .page .msg::after { content: '”'; }
   .page .divider-motif { margin: 0; opacity: 0.85; flex: none; transform: scale(0.5); }
-  .page .spacer { flex: 1; min-height: 2px; }
+  /* El sobrante de alto se reparte arriba y abajo del mensaje: antes caia
+     todo junto entre la cruz y la fecha y quedaba un hueco en el celular. */
+  .page .spacer { flex: 1 1 0; min-height: 2px; }
+  .page .spacer-top { flex: 0.8 1 0; }
   .page .when {
     display: flex; flex-direction: column; gap: 0.6%;
     font-size: clamp(0.72rem, 3.5cqw, 1.15rem); font-weight: 700; letter-spacing: 0.01em;
@@ -210,7 +215,7 @@ body { margin: 0; }
     background: rgba(255,255,255,0.42);
     box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22);
   }
-  .page .parroquia { margin: 2% 0 0; font-size: clamp(0.66rem, 3.1cqw, 1.02rem); font-weight: 700; }
+  .page .parroquia { margin: 2% 0 0; font-size: clamp(0.74rem, 4.4cqw, 1.22rem); font-weight: 700; line-height: 1.25; }
   .page .direccion { margin: 0.6% 0 0; font-size: clamp(0.58rem, 2.7cqw, 0.9rem); opacity: 0.9; }
   .page .footer-logo {
     display: flex; align-items: center; justify-content: center; gap: 2.5%;
@@ -239,7 +244,7 @@ body { margin: 0; }
     box-shadow: 0 18px 36px -14px rgba(0,0,0,0.3),
                 inset 0 0 0 1px color-mix(in srgb, var(--gold) 45%, transparent),
                 0 0 0 7px color-mix(in srgb, var(--gold) 9%, transparent);
-    animation: badgeBreathe 5s ease-in-out infinite;
+    animation: fadeInUp 0.75s ease both, badgeBreathe 5s ease-in-out 0.8s infinite;
   }
   @keyframes badgeBreathe {
     0%, 100% { transform: scale(1); }
@@ -254,6 +259,45 @@ body { margin: 0; }
   .intro p { color: var(--ink-soft); line-height: 1.7; margin: 0 0 32px; font-size: 1.02rem; max-width: 44ch; margin-inline: auto; }
   .intro .btn { padding: 17px 44px; font-size: 1.05rem; transition: transform 0.18s ease, box-shadow 0.18s ease; }
   .intro .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -12px color-mix(in srgb, var(--gold-deep) 75%, transparent); }
+
+  /* ---- Home: motas de luz que suben ---- */
+  .home-fx { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .mote {
+    position: absolute; bottom: -6%; border-radius: 50%;
+    background: currentColor; color: var(--gold); opacity: 0;
+    filter: blur(0.5px); box-shadow: 0 0 10px 2px currentColor;
+    animation-name: moteRise; animation-timing-function: linear; animation-iteration-count: infinite;
+  }
+  @keyframes moteRise {
+    0%        { transform: translate3d(0, 0, 0) scale(0.7); opacity: 0; }
+    12%       { opacity: 0.5; }
+    70%       { opacity: 0.38; }
+    100%      { transform: translate3d(26px, -112vh, 0) scale(1.1); opacity: 0; }
+  }
+  /* El contenido siempre por encima de las motas */
+  header.top, main.wrap, .credit { position: relative; z-index: 1; }
+
+  /* ---- Home: la pantalla se arma en cascada ---- */
+  .home-intro > * { animation: fadeInUp 0.75s ease both; }
+  .home-intro > *:nth-child(1) { animation-delay: 0.05s; }
+  .home-intro > *:nth-child(2) { animation-delay: 0.15s; }
+  .home-intro > *:nth-child(3) { animation-delay: 0.25s; }
+  .home-intro > *:nth-child(4) { animation-delay: 0.35s; }
+  .home-intro > *:nth-child(5) { animation-delay: 0.55s; }
+  .home-intro > *:nth-child(6) { animation-delay: 0.65s; }
+  .home-intro .steps li { animation: fadeInUp 0.6s ease both; }
+  .home-intro .steps li:nth-child(1) { animation-delay: 0.40s; }
+  .home-intro .steps li:nth-child(2) { animation-delay: 0.50s; }
+  .home-intro .steps li:nth-child(3) { animation-delay: 0.60s; }
+
+  /* Destello que recorre el boton de empezar */
+  .intro .btn { position: relative; overflow: hidden; }
+  .intro .btn::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: translateX(-180%); pointer-events: none;
+    animation: btnSheen 5.5s ease-in-out 1.8s infinite;
+  }
 
   /* ---- Pasos del home ---- */
   .steps {
@@ -356,8 +400,13 @@ body { margin: 0; }
   }
   .invite-screen .book-wrap {
     --card-w: min(calc(100vw - 24px), 420px);
+    /* El alto va por contenido, no por proporcion fija: las tipografias tienen
+       minimo, asi que la tarjeta necesita casi el mismo alto en un celular
+       angosto que en uno ancho. Con una proporcion fija sobraba un hueco en
+       las pantallas medianas y se aplastaba la foto en las angostas. */
+    --card-h: max(615px, calc(var(--card-w) * 1.59));
     width: var(--card-w);
-    height: min(calc(100dvh - 36px), calc(var(--card-w) * 1.77));
+    height: min(calc(100dvh - 36px), var(--card-h));
   }
   .invite-screen .book { aspect-ratio: auto; width: 100%; height: 100%; }
   .invite-screen .cover-wrap,
@@ -535,6 +584,7 @@ body { margin: 0; }
   img, svg { max-width: 100%; }
 
   @media (prefers-reduced-motion: reduce) {
+    .mote, .home-intro > *, .home-intro .steps li, .intro .btn::after,
     .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp,
     .invite-screen:not(.opened) .book-wrap, .book:not(.open) .cover-hint,
     .invite-extra .btn::after, .intro .badge, .book-wrap.is-open,
@@ -583,7 +633,7 @@ body { margin: 0; }
     .intro p { font-size: 0.88rem; margin-bottom: 16px; }
     .steps { margin-bottom: 16px; gap: 8px; }
     .event-chip { margin-top: 14px; }
-    .invite-screen .book-wrap { height: min(calc(100dvh - 24px), calc(var(--card-w) * 1.77)); }
+    .invite-screen .book-wrap { height: min(calc(100dvh - 24px), var(--card-h)); }
   }
 
   /* ---- Pantallas anchas: el home no se estira de mas ---- */
@@ -595,6 +645,66 @@ body { margin: 0; }
   /* ---- Cada elemento tactil, con area suficiente ---- */
   @media (pointer: coarse) {
     .btn, .gender-btn, .linklike, .song-mute { min-height: 44px; }
+  }
+
+  /* ---- Lista de tarjetas creadas (/?lista=1) ---- */
+  .lista { display: flex; flex-direction: column; gap: 14px; }
+  .lista-resumen { text-align: center; }
+  .lista-tabla {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; box-shadow: 0 10px 26px -18px rgba(20,14,4,0.45);
+  }
+  .lista-tabla table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .lista-tabla th {
+    text-align: left; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold-deep); padding: 12px 14px;
+    background: color-mix(in srgb, var(--gold) 12%, transparent);
+  }
+  .lista-tabla td { padding: 11px 14px; border-top: 1px solid var(--line); }
+  .lista-tabla tbody tr td:first-child { font-weight: 700; }
+  .lista-tabla td:nth-child(2), .lista-tabla th:nth-child(2) { white-space: nowrap; }
+  .lista-tabla td:last-child, .lista-tabla th:last-child { white-space: nowrap; color: var(--ink-soft); }
+  @media (max-width: 480px) {
+    .lista-tabla table { font-size: 0.8rem; }
+    .lista-tabla th, .lista-tabla td { padding: 9px 10px; }
+  }
+
+  /* ---- Imprimir la tarjeta ---- */
+  /* La copia para imprimir vive fuera de #app y solo existe mientras dura el
+     dialogo de impresion. En pantalla no se ve nunca. */
+  /* Fuera de pantalla en vez de display:none: asi el navegador baja las
+     imagenes y los fondos antes de abrir el dialogo de impresion. */
+  #print-area {
+    /* 165mm de ancho -> 247mm de alto: entra en A4 con margen y a ese tamaño
+       las tipografias llegan a su maximo sin dejar huecos. */
+    position: fixed; left: -10000px; top: 0; width: 165mm;
+    opacity: 0; pointer-events: none; z-index: -1;
+  }
+
+  @media print {
+    @page { size: A4 portrait; margin: 8mm; }
+    html, body { background: #fff !important; overflow: visible !important; max-width: none !important; }
+    body > *:not(#print-area) { display: none !important; }
+    #print-area {
+      position: static !important; left: auto !important; width: auto !important;
+      opacity: 1 !important; z-index: auto !important;
+    }
+
+    .print-sheet {
+      width: 165mm; max-width: 100%; margin: 0 auto;
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    /* Sin esto los navegadores descartan fondos y la tarjeta sale en blanco. */
+    .print-sheet, .print-sheet * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .print-sheet .page {
+      box-shadow: none !important;
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    /* Brillos y destellos no aportan nada en papel. */
+    .print-sheet .shine, .print-sheet .sparkles { display: none !important; }
   }
 
   /* ---- Mensaje que se escribe solo ---- */
