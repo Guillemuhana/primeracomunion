@@ -473,7 +473,7 @@ import { toPng } from 'html-to-image';
 
   function renderSuccess() {
     var f = state.form;
-    var waText = encodeURIComponent(textoCompartir(f.nombre.trim(), state.shareUrl));
+    var waUrl = 'https://wa.me/?text=' + encodeURIComponent(textoCompartir(f.nombre.trim(), state.shareUrl));
     shell(
       '<div class="fade-up success-wrap">' +
       '<div><p class="label preview-label">Tu invitación · tocá para abrirla</p>' + bookHTML('success-book', f) + '</div>' +
@@ -481,29 +481,34 @@ import { toPng } from 'html-to-image';
       coverHTML(f, { id: 'capture-cover' }) +
       '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside' }) + '</div>' +
       '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:10px">' +
-      '<button class="btn" id="download-btn" data-which="inside">Descargar el interior (imagen)</button>' +
-      '<button class="btn ghost" id="download-cover-btn" data-which="cover">Descargar la tapa</button>' +
-      '<a class="btn wa" target="_blank" rel="noreferrer" href="https://wa.me/?text=' + waText + '">Compartir por WhatsApp</a>' +
-      '<div class="link-row"><input readonly value="' + esc(state.shareUrl) + '" id="share-input" style="flex:1;font-size:0.75rem"/>' +
-      '<button class="btn ghost" id="copy-btn" style="width:auto;padding:0 14px">Copiar</button></div>' +
-      '<a href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer" style="font-size:0.85rem;color:var(--gold-deep)">Ver mi invitación animada →</a>' +
+      '<div class="actions">' +
+      '<button class="btn wa" id="share-btn">Compartir</button>' +
+      '<button class="btn" id="download-btn">Descargar</button>' +
+      '<a class="btn ghost" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer">Ver presentación</a>' +
       '</div>' +
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
       '</div>'
     );
     wireBook('success-book');
-    document.getElementById('share-input').addEventListener('focus', function (e) { e.target.select(); });
-    document.getElementById('copy-btn').addEventListener('click', function () {
-      navigator.clipboard.writeText(state.shareUrl).catch(function () {});
+
+    // Compartir: el menu nativo del celular si existe, si no WhatsApp.
+    document.getElementById('share-btn').addEventListener('click', function () {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Mi Primera Comunión · ' + f.nombre.trim(),
+          text: textoCompartir(f.nombre.trim(), state.shareUrl),
+        }).catch(function () {});
+      } else {
+        window.open(waUrl, '_blank', 'noreferrer');
+      }
     });
+
+    document.getElementById('download-btn').addEventListener('click', function () { downloadCard('inside', this); });
     document.getElementById('again-btn').addEventListener('click', function () {
       state.form = JSON.parse(JSON.stringify(emptyForm));
       state.view = 'form';
       render();
     });
-    document.getElementById('download-btn').addEventListener('click', function () { downloadCard('inside', this); });
-    document.getElementById('download-cover-btn').addEventListener('click', function () { downloadCard('cover', this); });
   }
 
   function downloadCard(which, btn) {
