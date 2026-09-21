@@ -461,7 +461,7 @@ body { margin: 0; }
   /* --mx es cuanto se corre hacia afuera; viaja tambien en los keyframes,
      asi cada tamano cambia el corrimiento sin duplicar la animacion. */
   .mono-deco {
-    position: fixed; top: 44%; right: 0; z-index: 0;
+    position: fixed; top: max(32%, 180px); right: 0; z-index: 0;
     --mx: 28%;
     width: clamp(150px, 19vw, 240px);
     transform: translate(var(--mx), -50%) rotate(7deg);
@@ -792,7 +792,7 @@ body { margin: 0; }
 
     main.wrap { padding: 24px 14px 48px; }
 
-    .mono-deco { width: 158px; top: 41%; opacity: 0.55; }
+    .mono-deco { width: 158px; top: max(20%, 138px); opacity: 0.55; }
 
     .intro { margin-top: 4px; }
     .intro .badge { width: 74px; height: 74px; margin-bottom: 14px; }
@@ -883,7 +883,7 @@ body { margin: 0; }
     .intro p { font-size: 0.88rem; margin-bottom: 16px; }
     .steps { margin-bottom: 16px; gap: 8px; }
     .event-chip { margin-top: 14px; }
-    .mono-deco { width: 104px; top: 46%; opacity: 0.45; }
+    .mono-deco { width: 104px; top: 42%; opacity: 0.45; }
     .invite-screen .book-wrap { height: min(calc(100dvh - 24px), var(--card-h)); }
   }
 
