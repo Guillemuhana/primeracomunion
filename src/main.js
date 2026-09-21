@@ -288,6 +288,22 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     );
   }
 
+  // La tarjeta es una caja de alto fijo: un nombre de dos renglones o un
+  // mensaje largo la desbordaban por abajo y el texto terminaba pisando lo que
+  // hubiera debajo. En vez de recortar, el texto se achica por tramos segun
+  // cuanto ocupa, asi entra entero y la fecha no se sale.
+  function escalaMensaje(largo) {
+    if (largo <= 210) return 1;
+    if (largo <= 280) return 0.8;
+    if (largo <= 350) return 0.72;
+    return 0.64;
+  }
+  function escalaNombre(largo) {
+    if (largo <= 16) return 1;
+    if (largo <= 24) return 0.82;
+    return 0.72;
+  }
+
   function pageHTML(data, opts) {
     opts = opts || {};
     var t = getPalette(data.genero);
@@ -305,10 +321,12 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<div class="church-banner"><img src="/church.jpg" alt=""/></div>' +
       '<img class="parroquia-logo" src="/parroquia-logo.png" alt=""/>' +
       '<p class="kicker" style="color:' + t.accentDeep + '"><i style="background:' + t.accent + '"></i>En su Primera Comunión<i style="background:' + t.accent + '"></i></p>' +
-      '<h2 class="font-display">' + (esc(data.nombre) || 'Nombre del niño/a') + '</h2>' +
+      '<h2 class="font-display" style="--name-scale:' + escalaNombre((data.nombre || '').trim().length) + '">' +
+      (esc(data.nombre) || 'Nombre del niño/a') + '</h2>' +
       '<div class="rule"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="' + t.accent + '"/></svg></div>' +
       '<div class="spacer spacer-top"></div>' +
-      (mensaje ? '<p class="msg font-display">' + esc(mensaje) + '</p>' : '') +
+      (mensaje ? '<p class="msg font-display" style="--msg-scale:' + escalaMensaje(mensaje.length) + '">' +
+        esc(mensaje) + '</p>' : '') +
       '<div class="divider-motif">' + motifSvg('cruz', t.accent, t.accentDeep, 30) + '</div>' +
       '<div class="spacer"></div>' +
       '<div class="when"><span>' + (formatFechaEs(data.fecha) || 'Fecha a confirmar') + '</span>' +

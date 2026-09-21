@@ -337,7 +337,8 @@ body { margin: 0; }
   /* +30%. A este tamano un nombre largo cae en dos renglones: el line-height
      bien ajustado y el word-break evitan que se desborde de la tarjeta. */
   .page h2 {
-    font-size: clamp(1.82rem, 13.1cqw, 4.23rem); font-weight: 600; margin: 0.5% 0 0.8%; line-height: 0.98;
+    font-size: calc(clamp(1.82rem, 13.1cqw, 4.23rem) * var(--name-scale, 1));
+    font-weight: 600; margin: 0.5% 0 0.8%; line-height: 0.98;
     text-shadow: 0 1px 2px rgba(255,255,255,0.6);
     letter-spacing: -0.01em; word-break: break-word;
   }
@@ -348,12 +349,18 @@ body { margin: 0; }
     background: currentColor;
   }
   .page .msg {
-    font-style: italic; font-size: clamp(1.12rem, 5.5cqw, 1.85rem); line-height: 1.36; margin: 0; max-width: 97%;
+    font-style: italic; line-height: 1.36; margin: 0; max-width: 97%;
+    font-size: calc(clamp(1.12rem, 5.5cqw, 1.85rem) * var(--msg-scale, 1));
     position: relative; opacity: 0.95;
   }
   .page .msg::before { content: '“'; }
   .page .msg::after { content: '”'; }
-  .page .divider-motif { margin: 0; opacity: 0.85; flex: none; transform: scale(0.5); }
+  /* El svg viene a 30px y se ve a la mitad: sin acotar el alto se llevaba los
+     30px de la caja para mostrar 15. */
+  .page .divider-motif {
+    margin: 0; opacity: 0.85; flex: none; transform: scale(0.5);
+    height: 16px; display: flex; align-items: center; justify-content: center;
+  }
   /* El sobrante de alto se reparte arriba y abajo del mensaje: antes caia
      todo junto entre la cruz y la fecha y quedaba un hueco en el celular. */
   .page .spacer { flex: 1 1 0; min-height: 2px; }
@@ -365,7 +372,11 @@ body { margin: 0; }
     background: rgba(255,255,255,0.42);
     box-shadow: inset 0 0 0 1px rgba(160,125,55,0.22);
   }
-  .page .parroquia { margin: 2% 0 0; font-size: clamp(0.74rem, 4.4cqw, 1.22rem); font-weight: 700; line-height: 1.25; }
+  /* balance: sin esto el renglon se parte dejando la "V" de San Pio sola. */
+  .page .parroquia {
+    margin: 2% 0 0; font-size: clamp(0.74rem, 4.4cqw, 1.22rem); font-weight: 700; line-height: 1.25;
+    text-wrap: balance;
+  }
   .page .direccion { margin: 0.6% 0 0; font-size: clamp(0.58rem, 2.7cqw, 0.9rem); opacity: 0.9; }
   .page .footer-logo {
     display: flex; align-items: center; justify-content: center; gap: 2.5%;
@@ -447,10 +458,13 @@ body { margin: 0; }
   /* Pegado al borde derecho y mitad afuera, como el que se monta sobre la
      tarjeta. Fijo, asi acompana el scroll; detras del contenido y sin
      capturar toques, porque es decoracion y nada mas. */
+  /* --mx es cuanto se corre hacia afuera; viaja tambien en los keyframes,
+     asi cada tamano cambia el corrimiento sin duplicar la animacion. */
   .mono-deco {
-    position: fixed; top: 50%; right: 0; z-index: 0;
-    width: clamp(104px, 16vw, 200px);
-    transform: translate(30%, -50%) rotate(7deg);
+    position: fixed; top: 44%; right: 0; z-index: 0;
+    --mx: 28%;
+    width: clamp(150px, 19vw, 240px);
+    transform: translate(var(--mx), -50%) rotate(7deg);
     pointer-events: none; opacity: 0.9;
     animation: monoDecoFlota 7s ease-in-out infinite;
   }
@@ -480,22 +494,14 @@ body { margin: 0; }
   /* El translate de centrado viaja en cada paso: si no, la animacion lo pisa
      y el mono salta al borde. */
   @keyframes monoDecoFlota {
-    0%, 100% { transform: translate(30%, -50%) rotate(7deg); }
-    50%      { transform: translate(30%, -53%) rotate(5deg); }
-  }
-  @keyframes monoDecoFlotaChico {
-    0%, 100% { transform: translate(40%, -50%) rotate(7deg); }
-    50%      { transform: translate(40%, -53%) rotate(5deg); }
+    0%, 100% { transform: translate(var(--mx), -50%) rotate(7deg); }
+    50%      { transform: translate(var(--mx), -53%) rotate(5deg); }
   }
 
-  /* De 900px para abajo el costado libre se termina: el mono se corre mas
-     afuera y se atenua, asi queda de fondo y no le pelea al texto. */
+  /* De 900px para abajo el costado libre se achica: el mono se corre un poco
+     mas afuera y se atenua, para quedar de fondo sin pelearle al texto. */
   @media (max-width: 900px) {
-    .mono-deco {
-      width: clamp(104px, 14vw, 136px); opacity: 0.55;
-      transform: translate(40%, -50%) rotate(7deg);
-      animation-name: monoDecoFlotaChico;
-    }
+    .mono-deco { --mx: 34%; width: clamp(140px, 20vw, 182px); opacity: 0.6; }
   }
   @keyframes monoDecoLuz {
     0%, 100% { filter: drop-shadow(0 12px 22px rgba(20,14,4,0.28)); }
@@ -786,7 +792,7 @@ body { margin: 0; }
 
     main.wrap { padding: 24px 14px 48px; }
 
-    .mono-deco { width: 104px; top: 62%; opacity: 0.42; }
+    .mono-deco { width: 158px; top: 41%; opacity: 0.55; }
 
     .intro { margin-top: 4px; }
     .intro .badge { width: 74px; height: 74px; margin-bottom: 14px; }
@@ -877,7 +883,7 @@ body { margin: 0; }
     .intro p { font-size: 0.88rem; margin-bottom: 16px; }
     .steps { margin-bottom: 16px; gap: 8px; }
     .event-chip { margin-top: 14px; }
-    .mono-deco { width: 96px; opacity: 0.45; }
+    .mono-deco { width: 104px; top: 46%; opacity: 0.45; }
     .invite-screen .book-wrap { height: min(calc(100dvh - 24px), var(--card-h)); }
   }
 
