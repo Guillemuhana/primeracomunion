@@ -436,6 +436,16 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     return '<div class="home-fx" aria-hidden="true">' + out + '</div>';
   }
 
+  // El mono de la comunion asomando por el costado del home, igual que se
+  // monta sobre el borde de la tarjeta: mitad afuera de la pantalla, flotando
+  // y con un destello que lo recorre cada tanto.
+  function monoDecoHTML() {
+    return '<div class="mono-deco" aria-hidden="true">' +
+      '<img src="/mono.webp" alt=""/>' +
+      '<span class="mono-deco-shine"><i></i></span>' +
+      '</div>';
+  }
+
   function renderIntro() {
     var pasos = [
       'Elegí nene o nena y escribí el nombre',
@@ -444,6 +454,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     ];
     shell(
       motasHTML(14) +
+      monoDecoHTML() +
       '<div class="intro home-intro">' +
       '<div class="badge">' + motifSvg('calix', '#c9a24b', '#9c7a2e', 52) + '</div>' +
       '<h2 class="font-display">Armá tu tarjeta de invitación</h2>' +

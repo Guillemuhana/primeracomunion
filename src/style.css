@@ -439,6 +439,68 @@ body { margin: 0; }
   }
   /* El contenido siempre por encima de las motas */
   header.top, main.wrap, .credit { position: relative; z-index: 1; }
+  /* Y por encima del mono y las motas, que son hermanos suyos dentro de .col:
+     sin esto, al estar posicionados, se pintarian sobre el texto. */
+  .home-intro { position: relative; z-index: 1; }
+
+  /* ---- Mono de comunion asomando en el costado del home ---- */
+  /* Pegado al borde derecho y mitad afuera, como el que se monta sobre la
+     tarjeta. Fijo, asi acompana el scroll; detras del contenido y sin
+     capturar toques, porque es decoracion y nada mas. */
+  .mono-deco {
+    position: fixed; top: 50%; right: 0; z-index: 0;
+    width: clamp(104px, 16vw, 200px);
+    transform: translate(30%, -50%) rotate(7deg);
+    pointer-events: none; opacity: 0.9;
+    animation: monoDecoFlota 7s ease-in-out infinite;
+  }
+  .mono-deco img {
+    display: block; width: 100%; height: auto;
+    filter: drop-shadow(0 12px 22px rgba(20,14,4,0.28));
+    animation: monoDecoLuz 7s ease-in-out infinite;
+  }
+  /* El destello se recorta al contorno del dibujo con una mascara; sin
+     soporte de mask-image no se muestra nada. */
+  .mono-deco .mono-deco-shine { display: none; }
+  @supports ((mask-image: url(/mono.webp)) or (-webkit-mask-image: url(/mono.webp))) {
+    .mono-deco .mono-deco-shine {
+      display: block; position: absolute; inset: 0; overflow: hidden;
+      -webkit-mask-image: url(/mono.webp); mask-image: url(/mono.webp);
+      -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      mix-blend-mode: screen;
+    }
+  }
+  .mono-deco .mono-deco-shine i {
+    position: absolute; top: -40%; bottom: -40%; left: -60%; width: 42%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,251,231,0.95) 50%, rgba(255,255,255,0) 100%);
+    transform: rotate(16deg); filter: blur(3px);
+    animation: monoDestello 5.5s cubic-bezier(.4,0,.2,1) 1.4s infinite;
+  }
+  /* El translate de centrado viaja en cada paso: si no, la animacion lo pisa
+     y el mono salta al borde. */
+  @keyframes monoDecoFlota {
+    0%, 100% { transform: translate(30%, -50%) rotate(7deg); }
+    50%      { transform: translate(30%, -53%) rotate(5deg); }
+  }
+  @keyframes monoDecoFlotaChico {
+    0%, 100% { transform: translate(40%, -50%) rotate(7deg); }
+    50%      { transform: translate(40%, -53%) rotate(5deg); }
+  }
+
+  /* De 900px para abajo el costado libre se termina: el mono se corre mas
+     afuera y se atenua, asi queda de fondo y no le pelea al texto. */
+  @media (max-width: 900px) {
+    .mono-deco {
+      width: clamp(104px, 14vw, 136px); opacity: 0.55;
+      transform: translate(40%, -50%) rotate(7deg);
+      animation-name: monoDecoFlotaChico;
+    }
+  }
+  @keyframes monoDecoLuz {
+    0%, 100% { filter: drop-shadow(0 12px 22px rgba(20,14,4,0.28)); }
+    50%      { filter: drop-shadow(0 14px 26px rgba(20,14,4,0.3)) drop-shadow(0 0 16px rgba(255,234,168,0.85)); }
+  }
 
   /* ---- Home: la pantalla se arma en cascada ---- */
   .home-intro > * { animation: fadeInUp 0.75s ease both; }
@@ -724,6 +786,8 @@ body { margin: 0; }
 
     main.wrap { padding: 24px 14px 48px; }
 
+    .mono-deco { width: 104px; top: 62%; opacity: 0.42; }
+
     .intro { margin-top: 4px; }
     .intro .badge { width: 74px; height: 74px; margin-bottom: 14px; }
     .intro .badge svg { width: 40px; height: 40px; }
@@ -763,12 +827,14 @@ body { margin: 0; }
     .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp,
     .invite-screen:not(.opened) .book-wrap, .book:not(.open) .cover-hint,
     .invite-extra .btn::after, .intro .badge, .book-wrap.is-open,
+    .mono-deco, .mono-deco img,
     .book:not(.open) .cover-wrap::after, .book.open .page .rule svg,
     .book.open .page .divider-motif, .book.open .page .when { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
     .btn { transition: none; }
     .page .mono-wrap, .page .mono-wrap .mono, .page .mono-shine i { animation: none !important; }
     .page .mono-shine { display: none !important; }
+    .mono-deco .mono-deco-shine { display: none !important; }
   }
 
   .success-wrap { position: relative; }
@@ -811,6 +877,7 @@ body { margin: 0; }
     .intro p { font-size: 0.88rem; margin-bottom: 16px; }
     .steps { margin-bottom: 16px; gap: 8px; }
     .event-chip { margin-top: 14px; }
+    .mono-deco { width: 96px; opacity: 0.45; }
     .invite-screen .book-wrap { height: min(calc(100dvh - 24px), var(--card-h)); }
   }
 
