@@ -455,13 +455,10 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   }
 
   // El mono de la comunion asomando por el costado del home, igual que se
-  // monta sobre el borde de la tarjeta: mitad afuera de la pantalla, flotando
-  // y con un destello que lo recorre cada tanto.
+  // monta sobre el borde de la tarjeta: mitad afuera de la pantalla. Va
+  // quieto, sin flotar ni destellar, que en una pantalla grande distraia.
   function monoDecoHTML() {
-    return '<div class="mono-deco" aria-hidden="true">' +
-      '<img src="/mono.webp" alt=""/>' +
-      '<span class="mono-deco-shine"><i></i></span>' +
-      '</div>';
+    return '<div class="mono-deco" aria-hidden="true"><img src="/mono.webp" alt=""/></div>';
   }
 
   // Lo que se manda al pasarle la app a otra familia del grado. No es una

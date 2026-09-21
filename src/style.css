@@ -463,54 +463,25 @@ body { margin: 0; }
   /* Pegado al borde derecho y mitad afuera, como el que se monta sobre la
      tarjeta. Fijo, asi acompana el scroll; detras del contenido y sin
      capturar toques, porque es decoracion y nada mas. */
-  /* --mx es cuanto se corre hacia afuera; viaja tambien en los keyframes,
-     asi cada tamano cambia el corrimiento sin duplicar la animacion. */
+  /* --mx es cuanto se corre hacia afuera; cada tamano lo cambia por su lado.
+     El mono va quieto: nada de flotar ni de latir. */
   .mono-deco {
-    position: fixed; top: max(26%, 200px); right: 0; z-index: 0;
+    position: fixed; top: 42%; right: 0; z-index: 0;
     --mx: 28%;
     width: clamp(150px, 19vw, 240px);
     transform: translate(var(--mx), -50%) rotate(7deg);
     pointer-events: none; opacity: 0.9;
-    animation: monoDecoFlota 7s ease-in-out infinite;
   }
   .mono-deco img {
     display: block; width: 100%; height: auto;
     filter: drop-shadow(0 12px 22px rgba(20,14,4,0.28));
-    animation: monoDecoLuz 7s ease-in-out infinite;
-  }
-  /* El destello se recorta al contorno del dibujo con una mascara; sin
-     soporte de mask-image no se muestra nada. */
-  .mono-deco .mono-deco-shine { display: none; }
-  @supports ((mask-image: url(/mono.webp)) or (-webkit-mask-image: url(/mono.webp))) {
-    .mono-deco .mono-deco-shine {
-      display: block; position: absolute; inset: 0; overflow: hidden;
-      -webkit-mask-image: url(/mono.webp); mask-image: url(/mono.webp);
-      -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
-      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-      mix-blend-mode: screen;
-    }
-  }
-  .mono-deco .mono-deco-shine i {
-    position: absolute; top: -40%; bottom: -40%; left: -60%; width: 42%;
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,251,231,0.95) 50%, rgba(255,255,255,0) 100%);
-    transform: rotate(16deg); filter: blur(3px);
-    animation: monoDestello 5.5s cubic-bezier(.4,0,.2,1) 1.4s infinite;
   }
   /* El translate de centrado viaja en cada paso: si no, la animacion lo pisa
      y el mono salta al borde. */
-  @keyframes monoDecoFlota {
-    0%, 100% { transform: translate(var(--mx), -50%) rotate(7deg); }
-    50%      { transform: translate(var(--mx), -53%) rotate(5deg); }
-  }
-
   /* De 900px para abajo el costado libre se achica: el mono se corre un poco
      mas afuera y se atenua, para quedar de fondo sin pelearle al texto. */
   @media (max-width: 900px) {
     .mono-deco { --mx: 34%; width: clamp(140px, 20vw, 182px); opacity: 0.6; }
-  }
-  @keyframes monoDecoLuz {
-    0%, 100% { filter: drop-shadow(0 12px 22px rgba(20,14,4,0.28)); }
-    50%      { filter: drop-shadow(0 14px 26px rgba(20,14,4,0.3)) drop-shadow(0 0 16px rgba(255,234,168,0.85)); }
   }
 
   /* ---- Home: la pantalla se arma en cascada ---- */
@@ -840,14 +811,12 @@ body { margin: 0; }
     .fade-up, .float, .pulse, .petal, .page .shine, .page .sparkles .sp,
     .invite-screen:not(.opened) .book-wrap, .book:not(.open) .cover-hint,
     .invite-extra .btn::after, .intro .badge, .book-wrap.is-open,
-    .mono-deco, .mono-deco img,
     .book:not(.open) .cover-wrap::after, .book.open .page .rule svg,
     .book.open .page .divider-motif, .book.open .page .when { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
     .btn { transition: none; }
     .page .mono-wrap, .page .mono-wrap .mono, .page .mono-shine i { animation: none !important; }
     .page .mono-shine { display: none !important; }
-    .mono-deco .mono-deco-shine { display: none !important; }
   }
 
   .success-wrap { position: relative; }
