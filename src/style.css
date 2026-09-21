@@ -789,9 +789,9 @@ body { margin: 0; }
 
     main.wrap { padding: 24px 14px 48px; }
 
-    /* 28%: arriba del medio pero ya fuera de la franja del encabezado, que
-       con el titulo mas grande llega casi al 28% del alto. */
-    .mono-deco { --mx: 42%; width: 158px; top: 28%; opacity: 0.55; }
+    /* 34%: bien por debajo de la franja del encabezado, que con el titulo
+       mas grande llega casi al 28% del alto. */
+    .mono-deco { --mx: 42%; width: 158px; top: 34%; opacity: 0.55; }
 
     .intro { margin-top: 4px; }
     .intro .badge { width: 74px; height: 74px; margin-bottom: 14px; }
