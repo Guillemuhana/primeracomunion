@@ -242,7 +242,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       (data.parroquia ? '<p class="parroquia">' + esc(data.parroquia) + '</p>' : '') +
       (data.direccion ? '<p class="direccion">' + esc(data.direccion) + '</p>' : '') +
       '<div class="footer-logo"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
-      '<span class="shine"></span>' +
+      '<span class="shine-box"><span class="shine"></span></span>' +
       '<span class="sparkles" aria-hidden="true">' +
       [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (n) { return '<i class="sp sp' + n + '" style="color:' + t.accentDeep + '"></i>'; }).join('') +
       '</span>' +
@@ -544,9 +544,10 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     shell(
       '<div class="fade-up success-wrap">' +
       '<div><p class="label preview-label">Tu invitación · tocá para abrirla</p>' + bookHTML('success-book', f) + '</div>' +
-      '<div style="position:fixed;left:-9999px;top:0;width:640px">' +
-      coverHTML(f, { id: 'capture-cover' }) +
-      '<div style="margin-top:24px">' + pageHTML(f, { id: 'capture-inside', cls: 'para-captura' }) + '</div>' +
+      '<div style="position:fixed;left:-9999px;top:0;width:900px">' +
+      '<div style="width:640px">' + coverHTML(f, { id: 'capture-cover' }) + '</div>' +
+      '<div id="capture-box" style="width:640px;padding:44px 44px 44px 127px;background:#ffffff;box-sizing:content-box;margin-top:24px">' +
+      pageHTML(f, { id: 'capture-inside', cls: 'para-captura' }) + '</div>' +
       '</div>' +
       '<div class="actions">' +
       '<button class="btn wa" id="share-btn">Compartir</button>' +
@@ -598,7 +599,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   // distinto. Se piden una sola vez y se reusan.
   var fuentesCss = null;
   function capturaJpeg() {
-    var node = document.getElementById('capture-inside');
+    var node = document.getElementById('capture-box');
     if (!node) return Promise.reject(new Error('sin tarjeta'));
     var listas = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     return listas
