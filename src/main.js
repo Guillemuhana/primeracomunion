@@ -295,9 +295,9 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   // cuanto ocupa, asi entra entero y la fecha no se sale.
   function escalaMensaje(largo) {
     if (largo <= 210) return 1;
-    if (largo <= 280) return 0.8;
-    if (largo <= 350) return 0.72;
-    return 0.64;
+    if (largo <= 280) return 0.75;
+    if (largo <= 350) return 0.68;
+    return 0.6;
   }
   function escalaNombre(largo) {
     if (largo <= 16) return 1;

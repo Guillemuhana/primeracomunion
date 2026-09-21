@@ -322,13 +322,13 @@ body { margin: 0; }
   /* 76% y no 80%: el borde izquierdo tiene que caer a la derecha del mono. */
   .page .church-banner {
     width: 76%; aspect-ratio: 900 / 506; border-radius: 12px; overflow: hidden;
-    margin: 0 0 1.5%; flex: 0 1 auto; min-height: 0;
+    margin: 0 0 1%; flex: 0 1 auto; min-height: 0;
     box-shadow: 0 14px 28px -14px rgba(0,0,0,0.45), 0 0 0 1px rgba(160,125,55,0.28), inset 0 0 0 3px rgba(255,255,255,0.75);
   }
   /* cover, no contain: si la tarjeta se achica el recuadro se acorta y con
      contain quedaban franjas blancas a los costados de la foto. */
   .page .church-banner img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
-  .page .parroquia-logo { width: clamp(126px, 34.5cqw, 201px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+  .page .parroquia-logo { width: clamp(126px, 34.5cqw, 201px); height: auto; margin: 0 0 1.3%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.02rem, 4.9cqw, 1.66rem); font-weight: 600;
@@ -354,8 +354,8 @@ body { margin: 0; }
      de la tarjeta. Los guiones de corte son los que evitan que en un renglon
      de treinta y pico de caracteres se abran huecos entre palabra y palabra. */
   .page .msg {
-    font-style: italic; line-height: 1.36; margin: 0; max-width: 97%;
-    font-size: calc(clamp(1.12rem, 5.5cqw, 1.85rem) * var(--msg-scale, 1));
+    font-style: italic; line-height: 1.36; margin: 0; max-width: 100%;
+    font-size: calc(clamp(1.19rem, 5.85cqw, 1.96rem) * var(--msg-scale, 1));
     position: relative; opacity: 0.95;
     text-align: justify; text-align-last: center;
     hyphens: auto; -webkit-hyphens: auto;
@@ -381,7 +381,7 @@ body { margin: 0; }
   }
   /* balance: sin esto el renglon se parte dejando la "V" de San Pio sola. */
   .page .parroquia {
-    margin: 2% 0 0; font-size: clamp(0.74rem, 4.4cqw, 1.22rem); font-weight: 700; line-height: 1.25;
+    margin: 1.3% 0 0; font-size: clamp(0.74rem, 4.4cqw, 1.22rem); font-weight: 700; line-height: 1.25;
     text-wrap: balance;
   }
   .page .direccion { margin: 0.6% 0 0; font-size: clamp(0.58rem, 2.7cqw, 0.9rem); opacity: 0.9; }
