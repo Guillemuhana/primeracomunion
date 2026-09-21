@@ -688,28 +688,43 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
 
   // ---------- Quien fue creando tarjetas ----------
   // /?lista=1 lee la misma tabla donde registrarUso() guarda cada invitacion.
+  // Todo lo de antes de LISTA_DESDE fueron pruebas nuestras armando la app:
+  // sigue guardado en la base, pero no entra en el conteo, que arranca de
+  // cero desde aca. Con /?lista=1&todo=1 se ve igual, historial completo.
+  var LISTA_DESDE = '2026-09-21T16:05:00Z';
+
+  function dosDigitos(n) { return (n < 10 ? '0' : '') + n; }
+
+  function desdeTexto() {
+    var d = new Date(LISTA_DESDE);
+    var iso = d.getFullYear() + '-' + dosDigitos(d.getMonth() + 1) + '-' + dosDigitos(d.getDate());
+    return formatFechaEs(iso) + ' · ' + dosDigitos(d.getHours()) + ':' + dosDigitos(d.getMinutes()) + ' hs';
+  }
+
   function fechaCorta(iso) {
     var d = new Date(iso);
     if (isNaN(d)) return '';
-    var dosDigitos = function (n) { return (n < 10 ? '0' : '') + n; };
     return dosDigitos(d.getDate()) + '/' + dosDigitos(d.getMonth() + 1) + ' · ' +
       dosDigitos(d.getHours()) + ':' + dosDigitos(d.getMinutes());
   }
 
   function renderLista() {
+    var todo = params.has('todo');
     shell('<div class="fade-up lista" id="lista"><p class="label">Cargando…</p></div>');
-    fetch(SUPABASE_URL + '/rest/v1/invitaciones_comunion?select=nombre_nino,template,created_at&order=created_at.desc', {
+    fetch(SUPABASE_URL + '/rest/v1/invitaciones_comunion' +
+      '?select=nombre_nino,template,created_at&order=created_at.desc' +
+      (todo ? '' : '&created_at=gte.' + encodeURIComponent(LISTA_DESDE)), {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
     })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(pintarLista)
+      .then(function (filas) { pintarLista(filas, todo); })
       .catch(function () {
         document.getElementById('lista').innerHTML =
           '<p class="note">No se pudo leer la lista. Probá recargar en unos segundos.</p>';
       });
   }
 
-  function pintarLista(filas) {
+  function pintarLista(filas, todo) {
     filas = filas || [];
     var vistos = {};
     filas.forEach(function (f) {
@@ -729,7 +744,8 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     document.getElementById('lista').innerHTML =
       '<h2 class="font-display" style="margin:0 0 4px">Tarjetas creadas</h2>' +
       '<p class="note lista-resumen">' + filas.length + ' tarjeta' + (filas.length === 1 ? '' : 's') +
-      ' · ' + unicos + ' chico' + (unicos === 1 ? '' : 's') + ' distinto' + (unicos === 1 ? '' : 's') + '</p>' +
+      ' · ' + unicos + ' chico' + (unicos === 1 ? '' : 's') + ' distinto' + (unicos === 1 ? '' : 's') +
+      (todo ? '<br>Historial completo, con las pruebas' : '<br>Desde ' + esc(desdeTexto())) + '</p>' +
       '<div class="lista-tabla"><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Cuándo</th></tr></thead>' +
       '<tbody>' + cuerpo + '</tbody></table></div>' +
       '<button class="btn ghost" id="csv-btn">Descargar CSV</button>';
