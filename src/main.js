@@ -226,6 +226,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<div class="corner tr">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner bl">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner br">' + cornerFlourish(t.accentDeep) + '</div>' +
+      '<img class="mono" src="/mono.webp" alt=""/>' +
       '<div class="school"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
       '<div class="church-banner"><img src="/church.jpg" alt=""/></div>' +
       '<img class="parroquia-logo" src="/parroquia-logo.png" alt=""/>' +
