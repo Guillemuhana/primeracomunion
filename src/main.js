@@ -180,6 +180,24 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   var HORA_EVENTO = '19:00';
   var DIRECCION_EVENTO = 'Rufino Varela Ortiz 2600 – B° Matienzo';
   var PARROQUIA_EVENTO = 'Parroquia Nuestra Señora de Fátima y San Pío V';
+  // Diez frases para elegir. Ninguna se escribe sola en la tarjeta: al tocar
+  // una se carga en el cuadro de texto y desde ahi se edita, se le agrega o se
+  // borra. Las que traen [corchetes] son huecos para completar (la casa o el
+  // salon del festejo, que cambian en cada familia): al elegirlas queda el
+  // hueco seleccionado para escribir encima.
+  var FRASES = [
+    { t: 'Sugerida', m: DEFAULT_MSG },
+    { t: 'Con ilusión', m: 'Con mucha ilusión quiero invitarte a compartir conmigo el día en que Jesús viene por primera vez a mi corazón.' },
+    { t: 'Unidos en la fe', m: 'En este día tan hermoso en que Dios me une a Él en la santa comunión, quiero compartir mi alegría con vos y con los que más quiero.' },
+    { t: 'Acompañame', m: 'Acompañame a celebrar este día tan especial, en el que recibo por primera vez a nuestro Señor Jesucristo.' },
+    { t: 'Y después, en casa', m: 'Te espero en la iglesia para recibir a Jesús por primera vez y, al terminar la misa, en casa: [dirección de tu casa], para seguir festejando juntos.' },
+    { t: 'Brindis en casa', m: 'Quiero que estés conmigo en la ceremonia y después en mi casa, en [dirección de tu casa], para brindar y compartir la mesa dulce.' },
+    { t: 'Almuerzo en familia', m: 'Terminada la ceremonia seguimos el festejo en [lugar del festejo], donde te espero para compartir un almuerzo en familia.' },
+    { t: 'Desde mi bautismo', m: 'Vos, que estuviste conmigo el día de mi bautismo, no podés faltar ahora que recibo a Jesús por primera vez.' },
+    { t: 'Gracias por venir', m: 'Hoy Jesús entra en mi corazón y quiero que las personas que más quiero estén conmigo. Gracias por acompañarme en este día.' },
+    { t: 'Para recordar', m: 'Hay días que se guardan en el corazón para siempre. Este es uno de ellos y quiero vivirlo con vos.' },
+  ];
+
   // El mensaje viene cargado con el texto sugerido para que se pueda editar,
   // borrar o reemplazar. Vacio a proposito tambien es una opcion valida.
   var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, mensaje: DEFAULT_MSG, genero: '' };
@@ -378,6 +396,23 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     else if (state.view === 'lista') renderLista();
   }
 
+  // Iconos de los botones. Van inline para que no dependan de ninguna fuente
+  // ni de un pedido mas al servidor, y toman el color del boton que los lleva.
+  var ICO = {
+    compartir:
+      '<svg class="ico" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M4 13v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M12 3v13"/><path d="m7.5 7.5 4.5-4.5 4.5 4.5"/></svg>',
+    bajar:
+      '<svg class="ico" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M12 3v12"/><path d="m16.5 10.5-4.5 4.5-4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>',
+    ver:
+      '<svg class="ico" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>',
+  };
+
   function creditoHTML() {
     return '<footer class="credit"><a href="https://sb2b.vercel.app/" target="_blank" rel="noopener">StudioB2B</a></footer>';
   }
@@ -473,8 +508,13 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     function pintarContador() {
       var cont = document.getElementById('msg-count');
       if (cont) cont.textContent = (state.form.mensaje || '').length + '/' + MSG_MAX;
-      var rest = document.getElementById('msg-restore');
-      if (rest) rest.disabled = (state.form.mensaje || '').trim() === DEFAULT_MSG;
+    }
+
+    function pintarFrases() {
+      var actual = (state.form.mensaje || '').trim();
+      Array.prototype.forEach.call(document.querySelectorAll('.frase'), function (b) {
+        b.classList.toggle('active', FRASES[Number(b.getAttribute('data-i'))].m === actual);
+      });
     }
 
     document.getElementById('f-nombre').addEventListener('input', function () {
@@ -486,19 +526,32 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     ta.addEventListener('input', function () {
       state.form.mensaje = ta.value;
       pintarContador();
+      pintarFrases();
       refrescarPreview();
     });
 
-    // Atajos para volver al texto sugerido o dejar la tarjeta sin mensaje.
-    function ponerMensaje(texto, foco) {
+    // Elegir una frase o vaciar la tarjeta escriben en el mismo textarea: lo
+    // que se elige es un punto de partida, nunca un texto cerrado.
+    function ponerMensaje(texto) {
       ta.value = texto;
       state.form.mensaje = texto;
       pintarContador();
+      pintarFrases();
       refrescarPreview();
-      if (foco) { ta.focus(); ta.setSelectionRange(texto.length, texto.length); }
+      var hueco = texto.indexOf('[');
+      if (hueco >= 0) {
+        // El hueco a completar queda seleccionado: se escribe encima.
+        ta.focus();
+        ta.setSelectionRange(hueco, texto.indexOf(']', hueco) + 1);
+      } else if (!texto) {
+        ta.focus();
+      }
     }
-    document.getElementById('msg-restore').addEventListener('click', function () { ponerMensaje(DEFAULT_MSG, false); });
-    document.getElementById('msg-clear').addEventListener('click', function () { ponerMensaje('', true); });
+    document.getElementById('frases-list').addEventListener('click', function (e) {
+      var btn = e.target.closest('.frase');
+      if (btn) ponerMensaje(FRASES[Number(btn.getAttribute('data-i'))].m);
+    });
+    document.getElementById('msg-clear').addEventListener('click', function () { ponerMensaje(''); });
 
     Array.prototype.forEach.call(document.querySelectorAll('.gender-btn'), function (btn) {
       btn.addEventListener('click', function () {
@@ -516,21 +569,37 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   // placeholder) para poder editarlo, agregarle o borrarlo. Vaciarlo del todo
   // es valido: la tarjeta sale sin el parrafo.
   var MSG_MAX = 420;
+
+  // Las diez frases, cada una con su titulo corto. La elegida queda marcada
+  // comparando el texto: si despues se edita una letra, deja de estar marcada,
+  // que es justo lo que pasa (ya no es esa frase, es la suya).
+  function frasesHTML(actual) {
+    return '<div class="frases">' +
+      '<p class="frases-head">Elegí una y editala a tu gusto</p>' +
+      '<div class="frases-list" id="frases-list">' +
+      FRASES.map(function (fr, i) {
+        return '<button type="button" class="frase' + (fr.m === actual ? ' active' : '') + '" data-i="' + i + '">' +
+          '<span class="frase-t">' + esc(fr.t) + '</span>' +
+          '<span class="frase-m">' + esc(fr.m) + '</span>' +
+          '</button>';
+      }).join('') +
+      '</div></div>';
+  }
+
   function mensajeFieldHTML(f) {
     var val = f.mensaje == null ? DEFAULT_MSG : f.mensaje;
-    var esSugerido = val.trim() === DEFAULT_MSG;
     return '<div class="field msg-field">' +
       '<div class="msg-head">' +
-      '<span class="label">Mensaje personalizado</span>' +
+      '<span class="label">Mensaje de la tarjeta</span>' +
       '<span class="msg-count" id="msg-count">' + val.length + '/' + MSG_MAX + '</span>' +
       '</div>' +
+      frasesHTML(val.trim()) +
       '<textarea id="f-mensaje" rows="6" maxlength="' + MSG_MAX + '" ' +
       'placeholder="Escribí acá tu mensaje…">' + esc(val) + '</textarea>' +
       '<div class="msg-tools">' +
-      '<button type="button" class="chip" id="msg-restore"' + (esSugerido ? ' disabled' : '') + '>↺ Texto sugerido</button>' +
       '<button type="button" class="chip" id="msg-clear">✕ Vaciar</button>' +
       '</div>' +
-      '<p class="hint">Editálo libremente: agregá, borrá o escribí el tuyo. Si lo dejás vacío, la tarjeta sale sin mensaje.</p>' +
+      '<p class="hint">Todas las frases son editables: agregá, borrá o escribí la tuya. Si la dejás vacía, la tarjeta sale sin mensaje.</p>' +
       '</div>';
   }
 
@@ -658,11 +727,14 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<div id="capture-box" style="width:640px;padding:44px 44px 44px 127px;background:#ffffff;box-sizing:content-box;margin-top:24px">' +
       pageHTML(f, { id: 'capture-inside', cls: 'para-captura' }) + '</div>' +
       '</div>' +
+      // Un solo boton principal (compartir, que es a lo que se vino) y abajo
+      // las dos acciones secundarias, a la par y del mismo peso.
       '<div class="actions">' +
-      '<button class="btn wa" id="share-btn">Compartir</button>' +
-      '<button class="btn" id="jpg-btn">Descargar JPG</button>' +
-      '<button class="btn ghost" id="pdf-btn">Descargar PDF</button>' +
-      '<a class="btn ghost" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer">Ver presentación</a>' +
+      '<button class="btn wa" id="share-btn">' + ICO.compartir + 'Compartir invitación</button>' +
+      '<div class="actions-row">' +
+      '<button class="btn soft" id="jpg-btn" title="Descargar la tarjeta como imagen JPG">' + ICO.bajar + 'Descargar</button>' +
+      '<a class="btn soft" id="present-btn" href="' + esc(state.shareUrl) + '" target="_blank" rel="noreferrer" title="Abrir la invitación como la va a ver quien la reciba">' + ICO.ver + 'Ver online</a>' +
+      '</div>' +
       '</div>' +
       '<div id="song-slot"></div>' +
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
@@ -687,7 +759,6 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     });
 
     document.getElementById('jpg-btn').addEventListener('click', function () { descargarJpg(this); });
-    document.getElementById('pdf-btn').addEventListener('click', function () { descargarPdf(this); });
     document.getElementById('again-btn').addEventListener('click', function () {
       state.form = JSON.parse(JSON.stringify(emptyForm));
       state.view = 'form';
@@ -734,11 +805,13 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     a.remove();
   }
 
+  // El label se guarda como HTML: los botones llevan el icono adentro.
   function conBoton(btn, tarea) {
-    var label = btn.textContent;
+    var label = btn.innerHTML;
     btn.disabled = true;
-    btn.textContent = 'Generando…';
-    var reset = function () { btn.textContent = label; btn.disabled = false; };
+    btn.classList.add('is-busy');
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Generando…';
+    var reset = function () { btn.innerHTML = label; btn.disabled = false; btn.classList.remove('is-busy'); };
     tarea().then(reset, function (err) {
       console.error(err);
       reset();
@@ -750,31 +823,6 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     conBoton(btn, function () {
       return capturaJpeg().then(function (dataUrl) {
         bajarArchivo(dataUrl, nombreArchivo('jpg'));
-      });
-    });
-  }
-
-  // El PDF es la misma captura centrada en una hoja A4. jsPDF se carga recien
-  // cuando alguien lo pide, asi no pesa en el arranque de la pagina.
-  function descargarPdf(btn) {
-    conBoton(btn, function () {
-      return Promise.all([capturaJpeg(), import('jspdf')]).then(function (r) {
-        var dataUrl = r[0];
-        var jsPDF = r[1].jsPDF;
-        return new Promise(function (resolve, reject) {
-          var img = new Image();
-          img.onload = function () {
-            var HOJA_W = 210, HOJA_H = 297, MARGEN = 10;
-            var escala = Math.min((HOJA_W - MARGEN * 2) / img.width, (HOJA_H - MARGEN * 2) / img.height);
-            var w = img.width * escala, h = img.height * escala;
-            var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-            doc.addImage(dataUrl, 'JPEG', (HOJA_W - w) / 2, (HOJA_H - h) / 2, w, h);
-            doc.save(nombreArchivo('pdf'));
-            resolve();
-          };
-          img.onerror = reject;
-          img.src = dataUrl;
-        });
       });
     });
   }

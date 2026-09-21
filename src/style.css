@@ -79,15 +79,50 @@ body { margin: 0; }
   .col { width: 100%; max-width: 980px; }
 
   .btn {
-    border: none; border-radius: 999px; padding: 16px 28px; font-weight: 800; font-size: 1rem;
+    border: none; border-radius: 16px; padding: 15px 26px; font-weight: 800; font-size: 1rem;
+    font-family: 'Nunito', system-ui, sans-serif;
     cursor: pointer; background: linear-gradient(165deg, var(--gold), var(--gold-deep));
-    color: var(--surface); text-decoration: none; display: inline-block; text-align: center;
-    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--gold-deep) 70%, transparent);
-    letter-spacing: 0.01em;
+    color: var(--surface); text-decoration: none; text-align: center;
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--gold-deep) 80%, transparent);
+    letter-spacing: 0.01em; line-height: 1.2;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
   }
-  .btn.wa { background: linear-gradient(165deg, #34e07f, var(--wa)); box-shadow: 0 10px 24px -10px #25d36680; }
-  .btn.ghost { background: transparent; color: var(--gold-deep); border: 1px solid var(--gold); box-shadow: none; }
+  .btn .ico { flex: none; }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 16px 30px -14px color-mix(in srgb, var(--gold-deep) 85%, transparent); }
+  .btn:active:not(:disabled) { transform: translateY(0) scale(0.985); }
+  .btn:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+  .btn.wa {
+    background: linear-gradient(165deg, #34e07f, var(--wa));
+    box-shadow: 0 10px 26px -12px #25d366aa;
+  }
+  .btn.wa:hover:not(:disabled) { box-shadow: 0 18px 32px -14px #25d366cc; }
+  /* Secundario: misma altura y mismo radio que el principal, sin competirle
+     en peso visual. Llenito y no calado: en el celular un boton calado se lee
+     como deshabilitado. */
+  .btn.soft {
+    background: var(--surface); color: var(--gold-deep);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 48%, transparent),
+                0 8px 18px -14px rgba(20,14,4,0.8);
+  }
+  .btn.soft:hover:not(:disabled) { background: color-mix(in srgb, var(--gold) 12%, var(--surface)); }
+  .btn.ghost { background: transparent; color: var(--gold-deep); box-shadow: inset 0 0 0 1px var(--gold); }
+  .btn.ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--gold) 10%, transparent); }
   .btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; box-shadow: none; }
+  /* Mientras genera el archivo el boton no se apaga: sigue siendo el mismo,
+     solo que ocupado. */
+  .btn.is-busy:disabled { background: linear-gradient(165deg, var(--gold), var(--gold-deep)); color: var(--surface); opacity: 0.85; }
+  .btn.soft.is-busy:disabled {
+    background: var(--surface); color: var(--gold-deep);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 48%, transparent);
+  }
+  .btn .spinner {
+    width: 15px; height: 15px; flex: none; border-radius: 50%;
+    border: 2px solid currentColor; border-top-color: transparent;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   .credit {
     margin: 0; padding: 18px 16px calc(22px + env(safe-area-inset-bottom, 0px));
@@ -132,6 +167,38 @@ body { margin: 0; }
   .chip:hover:not(:disabled) { border-color: var(--gold-deep); color: var(--gold-deep); transform: translateY(-1px); }
   .chip:disabled { opacity: 0.4; cursor: default; }
   .hint { margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--ink-soft); opacity: 0.85; }
+
+  /* ---- Frases para elegir ---- */
+  /* La lista scrollea adentro de su caja: diez frases enteras empujarian el
+     formulario y dejarian la vista previa fuera de pantalla. */
+  .frases { display: flex; flex-direction: column; gap: 7px; }
+  .frases-head { margin: 0; font-size: 0.72rem; font-weight: 700; color: var(--ink-soft); }
+  .frases-list {
+    display: flex; flex-direction: column; gap: 4px;
+    max-height: 212px; overflow-y: auto; overscroll-behavior: contain;
+    padding: 5px; border: 1px solid var(--line); border-radius: 14px;
+    background: var(--surface); scrollbar-width: thin;
+  }
+  .frase {
+    display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%;
+    border: 1px solid transparent; border-radius: 11px; padding: 9px 11px;
+    background: transparent; cursor: pointer; color: var(--ink);
+    font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .frase:hover { background: color-mix(in srgb, var(--gold) 9%, transparent); }
+  .frase:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 1px; }
+  .frase.active {
+    border-color: color-mix(in srgb, var(--gold) 70%, transparent);
+    background: color-mix(in srgb, var(--gold) 15%, transparent);
+  }
+  .frase-t { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-deep); }
+  /* Recortada a dos renglones; la elegida se muestra entera. */
+  .frase-m {
+    font-size: 0.8rem; line-height: 1.45; color: var(--ink-soft);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .frase.active .frase-m { -webkit-line-clamp: 6; color: var(--ink); }
 
   .form-grid { display: grid; gap: 28px; }
   @media (min-width: 860px) {
@@ -239,7 +306,7 @@ body { margin: 0; }
     38% { left: 118%; }
     100% { left: 118%; }
   }
-  /* En la captura para JPG/PDF nada se mueve: el destello saldria congelado
+  /* En la captura que se descarga nada se mueve: el destello saldria congelado
      a mitad de camino. */
   .page.para-captura .mono-wrap,
   .page.para-captura .mono-wrap .mono { animation: none; }
@@ -316,14 +383,22 @@ body { margin: 0; }
   .preview-label { text-align: center; }
 
   .success-wrap { display: grid; gap: 24px; max-width: 420px; margin: 0 auto; text-align: center; }
-  .actions { display: flex; flex-direction: column; gap: 10px; }
-  .actions .btn { transition: transform 0.16s ease, box-shadow 0.16s ease; }
-  .actions .btn:hover { transform: translateY(-2px); }
+  /* Compartir arriba y a lo ancho; descargar y ver online abajo, a la par,
+     porque son la misma clase de accion. */
+  .actions { display: grid; gap: 10px; }
+  .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .actions-row .btn { padding-inline: 14px; }
   .note {
     font-size: 0.78rem; color: var(--gold-deep); background: color-mix(in srgb, var(--gold) 18%, transparent);
     border-radius: 10px; padding: 8px 12px; margin: 0;
   }
-  .linklike { background: none; border: none; color: var(--gold-deep); font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+  .linklike {
+    background: none; border: none; color: var(--gold-deep); font-size: 0.85rem; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 700; padding: 8px 12px; border-radius: 10px;
+    text-decoration: underline; text-underline-offset: 3px;
+    transition: background 0.15s;
+  }
+  .linklike:hover { background: color-mix(in srgb, var(--gold) 10%, transparent); }
 
   .intro { text-align: center; max-width: 520px; margin: 18px auto 0; }
   .intro .badge {
@@ -663,7 +738,9 @@ body { margin: 0; }
     .note { font-size: 0.72rem; line-height: 1.5; }
 
     .success-wrap { gap: 18px; }
-    .actions { gap: 9px; }
+    .actions, .actions-row { gap: 9px; }
+    .actions-row .btn { padding-inline: 10px; font-size: 0.88rem; gap: 7px; }
+    .frases-list { max-height: 178px; }
 
     .invite-book-wrap { padding: 12px 5px 0; }
     .invite-extra { padding: 6px 16px 32px; }
@@ -689,6 +766,7 @@ body { margin: 0; }
     .book:not(.open) .cover-wrap::after, .book.open .page .rule svg,
     .book.open .page .divider-motif, .book.open .page .when { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
+    .btn { transition: none; }
     .page .mono-wrap, .page .mono-wrap .mono, .page .mono-shine i { animation: none !important; }
     .page .mono-shine { display: none !important; }
   }
