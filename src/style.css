@@ -259,7 +259,7 @@ body { margin: 0; }
   /* cover, no contain: si la tarjeta se achica el recuadro se acorta y con
      contain quedaban franjas blancas a los costados de la foto. */
   .page .church-banner img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
-  .page .parroquia-logo { width: clamp(110px, 30cqw, 175px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+  .page .parroquia-logo { width: clamp(126px, 34.5cqw, 201px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
     font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.02rem, 4.9cqw, 1.66rem); font-weight: 600;
@@ -268,7 +268,7 @@ body { margin: 0; }
   /* Las rayitas de los costados acompanan al texto mas grande. */
   .page .kicker i { display: block; width: clamp(15px, 6cqw, 33px); height: 1px; opacity: 0.7; font-style: normal; }
   .page h2 {
-    font-size: clamp(1.24rem, 9cqw, 2.9rem); font-weight: 600; margin: 0.5% 0 0.8%; line-height: 1.02;
+    font-size: clamp(1.4rem, 10.1cqw, 3.25rem); font-weight: 600; margin: 0.5% 0 0.8%; line-height: 1.02;
     text-shadow: 0 1px 2px rgba(255,255,255,0.6);
     letter-spacing: -0.01em; word-break: break-word;
   }
