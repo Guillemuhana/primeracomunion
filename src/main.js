@@ -464,6 +464,23 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '</div>';
   }
 
+  // Lo que se manda al pasarle la app a otra familia del grado. No es una
+  // invitacion: es el link para que armen la suya.
+  function textoCompartirApp(url) {
+    return '✨ Invitaciones de Primera Comunión · 5° Grado B ✨\n\n' +
+      'Armá la tarjeta de tu hijo/a en un minuto: elegís nene o nena, ponés el nombre ' +
+      'y el mensaje, y te queda lista para compartir por WhatsApp.\n\n' +
+      '📅 ' + formatFechaEs(FECHA_EVENTO) + '\n' +
+      '🕐 ' + formatHora(HORA_EVENTO) + '\n' +
+      '⛪ ' + PARROQUIA_EVENTO + '\n\n' +
+      'Entrá acá 👉 ' + url;
+  }
+
+  // El home puede abrirse con parametros colgados: se comparte la raiz limpia.
+  function urlDeLaApp() {
+    return new URL('./', location.href).href;
+  }
+
   function renderIntro() {
     var pasos = [
       'Elegí nene o nena y escribí el nombre',
@@ -483,7 +500,10 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
         return '<li><span class="step-n">' + (i + 1) + '</span><span>' + paso + '</span></li>';
       }).join('') +
       '</ol>' +
+      '<div class="home-cta">' +
       '<button class="btn" id="start-btn">Comenzar ✨</button>' +
+      '<button class="btn soft" id="share-app-btn">' + ICO.compartir + 'Compartir la app</button>' +
+      '</div>' +
       '<div class="event-chip">' +
       '<span>📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '</span>' +
       '<span>⛪ ' + esc(PARROQUIA_EVENTO) + '</span>' +
@@ -491,6 +511,16 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '</div>'
     );
     document.getElementById('start-btn').onclick = function () { state.view = 'form'; render(); };
+
+    document.getElementById('share-app-btn').addEventListener('click', function () {
+      var texto = textoCompartirApp(urlDeLaApp());
+      if (navigator.share) {
+        navigator.share({ title: 'Invitaciones de Primera Comunión · 5° Grado B', text: texto })
+          .catch(function () {});
+      } else {
+        window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank', 'noreferrer');
+      }
+    });
   }
 
   function canSubmit() {
