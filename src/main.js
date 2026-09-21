@@ -176,7 +176,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     audioEl.currentTime = 0;
   }
 
-  var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
+  var DEFAULT_MSG = 'Voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme y luego a celebrar en mi casa.';
   var FECHA_EVENTO = '2026-09-25';
   var HORA_EVENTO = '19:00';
   var DIRECCION_EVENTO = 'Rufino Varela Ortiz 2600 – B° Matienzo';
@@ -293,11 +293,17 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   // mensaje largo la desbordaban por abajo y el texto terminaba pisando lo que
   // hubiera debajo. En vez de recortar, el texto se achica por tramos segun
   // cuanto ocupa, asi entra entero y la fecha no se sale.
+  // Los cortes salen de medir el ajuste de linea con la tipografia de la
+  // tarjeta: en un celular de 390 la columna es de 256px y al mensaje le
+  // quedan 186px de alto. Cada tramo toma la escala mas grande que entra en
+  // esos 186, redondeada para abajo.
   function escalaMensaje(largo) {
-    if (largo <= 210) return 1;
-    if (largo <= 280) return 0.75;
-    if (largo <= 350) return 0.68;
-    return 0.6;
+    if (largo <= 190) return 1;
+    if (largo <= 230) return 0.94;
+    if (largo <= 255) return 0.88;
+    if (largo <= 290) return 0.82;
+    if (largo <= 380) return 0.76;
+    return 0.7;
   }
   function escalaNombre(largo) {
     if (largo <= 16) return 1;

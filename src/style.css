@@ -354,8 +354,8 @@ body { margin: 0; }
      de la tarjeta. Los guiones de corte son los que evitan que en un renglon
      de treinta y pico de caracteres se abran huecos entre palabra y palabra. */
   .page .msg {
-    font-style: italic; line-height: 1.36; margin: 0; max-width: 100%;
-    font-size: calc(clamp(1.19rem, 5.85cqw, 1.96rem) * var(--msg-scale, 1));
+    font-style: italic; line-height: 1.36; margin: 0; max-width: 97%;
+    font-size: calc(clamp(1.12rem, 5.5cqw, 1.85rem) * var(--msg-scale, 1));
     position: relative; opacity: 0.95;
     text-align: justify; text-align-last: center;
     hyphens: auto; -webkit-hyphens: auto;
