@@ -355,7 +355,7 @@ body { margin: 0; }
      de treinta y pico de caracteres se abran huecos entre palabra y palabra. */
   .page .msg {
     font-style: italic; line-height: 1.36; margin: 0; max-width: 97%;
-    font-size: calc(clamp(1.12rem, 5.5cqw, 1.85rem) * var(--msg-scale, 1));
+    font-size: calc(clamp(1.16rem, 5.5cqw, 1.85rem) * var(--msg-scale, 1));
     position: relative; opacity: 0.95;
     text-align: justify; text-align-last: center;
     hyphens: auto; -webkit-hyphens: auto;
