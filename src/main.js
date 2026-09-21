@@ -84,47 +84,95 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
 
   // ---------- State ----------
   // ---------- Musica ----------
-  // Si existe /cancion.mp3 en el sitio, se reproduce sola al abrir la tarjeta
-  // y en loop: el toque que la abre es el gesto que el navegador pide para
-  // habilitar audio. Si el archivo no esta, no se muestra nada.
+  // Suena sola apenas se ve la tapa de la tarjeta, en loop. Casi ningun
+  // navegador deja arrancar audio sin un gesto previo del visitante: se
+  // intenta igual de entrada y, si lo bloquean, queda armado para largar en
+  // el primer toque / scroll / tecla que haya. Si el archivo no esta, no se
+  // muestra nada.
   var AUDIO_SRC = '/cancion.mp3';
   var audioEl = null;
+  var musicaSlot = '';
+  var musicaColor = '';
+  var gestosArmados = false;
+  var GESTOS = ['pointerdown', 'touchstart', 'keydown', 'scroll', 'click'];
 
   function botonSilenciarHTML(color) {
     return '<div class="song">' +
       '<button class="song-mute" id="song-mute"' + (color ? ' style="color:' + color + '"' : '') + '>' +
-      '♪ Música · silenciar</button></div>';
+      '\u266a M\u00fasica \u00b7 silenciar</button></div>';
   }
 
-  // Llamar SIEMPRE dentro del gesto que abre la tarjeta.
-  function iniciarMusica(slotId, color) {
-    var hueco = document.getElementById(slotId);
+  function huecoMusica() {
+    return musicaSlot ? document.getElementById(musicaSlot) : null;
+  }
+
+  function sinMusica() {
+    var hueco = huecoMusica();
+    if (hueco) hueco.innerHTML = '';
+  }
+
+  function mostrarControlMusica() {
+    var hueco = huecoMusica();
     if (!hueco || hueco.getAttribute('data-listo')) return;
     hueco.setAttribute('data-listo', '1');
+    hueco.innerHTML = botonSilenciarHTML(musicaColor);
+    var btn = document.getElementById('song-mute');
+    btn.addEventListener('click', function () {
+      if (audioEl.paused) {
+        audioEl.muted = false;
+        audioEl.play().catch(function () {});
+      } else {
+        audioEl.muted = !audioEl.muted;
+      }
+      btn.textContent = audioEl.muted ? '\u2715 M\u00fasica \u00b7 activar' : '\u266a M\u00fasica \u00b7 silenciar';
+    });
+  }
 
-    // Sin archivo de audio no se muestra nada.
-    var sinMusica = function () { hueco.innerHTML = ''; };
+  function reproducirMusica() {
+    if (!audioEl) return;
+    var pr = audioEl.play();
+    if (pr && pr.then) pr.then(mostrarControlMusica, armarGestos);
+    else mostrarControlMusica();
+  }
 
+  // Un solo juego de listeners: el primer gesto que haya larga la cancion y
+  // despues se desarman solos. En captura, para que no los tape nadie.
+  function armarGestos() {
+    if (gestosArmados) return;
+    gestosArmados = true;
+    var largar = function () {
+      gestosArmados = false;
+      GESTOS.forEach(function (ev) { document.removeEventListener(ev, largar, true); });
+      reproducirMusica();
+    };
+    GESTOS.forEach(function (ev) { document.addEventListener(ev, largar, true); });
+  }
+
+  // Llamar al renderizar la pantalla que muestra la tapa.
+  function arrancarMusica(slotId, color) {
+    musicaSlot = slotId;
+    musicaColor = color || '';
+    if (audioEl) { reproducirMusica(); return; }
     try {
       audioEl = new Audio(AUDIO_SRC);
       audioEl.loop = true;
-      audioEl.addEventListener('error', sinMusica, { once: true });
-      var pr = audioEl.play();
-      if (pr && pr.then) {
-        pr.then(function () {
-          hueco.innerHTML = botonSilenciarHTML(color);
-          var btn = document.getElementById('song-mute');
-          btn.addEventListener('click', function () {
-            audioEl.muted = !audioEl.muted;
-            btn.textContent = audioEl.muted ? '✕ Música · activar' : '♪ Música · silenciar';
-          });
-        }, sinMusica);
-      } else {
-        sinMusica();
-      }
+      audioEl.preload = 'auto';
+      // Sin archivo de audio no se muestra nada y no se reintenta.
+      audioEl.addEventListener('error', function () { audioEl = null; sinMusica(); }, { once: true });
+      reproducirMusica();
     } catch (e) {
+      audioEl = null;
       sinMusica();
     }
+  }
+
+  // Al salir de la tarjeta la cancion se corta: el boton para volver a
+  // activarla ya no esta en pantalla.
+  function detenerMusica() {
+    musicaSlot = '';
+    if (!audioEl) return;
+    audioEl.pause();
+    audioEl.currentTime = 0;
   }
 
   var DEFAULT_MSG = 'Hoy voy a recibir por primera vez el Cuerpo y la Sangre de Cristo en la Eucaristía. Quiero compartir este momento tan especial con las personas que más quiero, por eso te invito a acompañarme.';
@@ -132,7 +180,9 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   var HORA_EVENTO = '19:00';
   var DIRECCION_EVENTO = 'Rufino Varela Ortiz 2600 – B° Matienzo';
   var PARROQUIA_EVENTO = 'Parroquia Nuestra Señora de Fátima y San Pío V';
-  var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, mensaje: '', genero: '' };
+  // El mensaje viene cargado con el texto sugerido para que se pueda editar,
+  // borrar o reemplazar. Vacio a proposito tambien es una opcion valida.
+  var emptyForm = { nombre: '', fecha: FECHA_EVENTO, hora: HORA_EVENTO, parroquia: PARROQUIA_EVENTO, direccion: DIRECCION_EVENTO, mensaje: DEFAULT_MSG, genero: '' };
   function illusSrc(genero) { return genero === 'nene' ? '/boy.jpg' : '/girl.jpg'; }
   function coverSrc(genero) { return genero === 'nene' ? '/cover-boy.jpg' : '/cover-girl.jpg'; }
   var state = { view: 'intro', form: JSON.parse(JSON.stringify(emptyForm)), shareUrl: '', duplicateNote: '' };
@@ -155,7 +205,11 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     url.hash = '';
     var q = url.searchParams;
     q.set('n', data.nombre);
-    if (data.mensaje && data.mensaje !== DEFAULT_MSG) q.set('m', data.mensaje);
+    // sm=1 marca 'sin mensaje': borrado a proposito. Si no, solo viaja el
+    // texto cuando es distinto del sugerido, para no alargar el link.
+    var msg = (data.mensaje == null ? DEFAULT_MSG : data.mensaje).trim();
+    if (!msg) q.set('sm', '1');
+    else if (msg !== DEFAULT_MSG) q.set('m', msg);
     q.set('c', data.codigo || nuevoCodigo());
     return url.toString();
   }
@@ -174,7 +228,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       return {
         nombre: nombre,
         genero: generoDeLaPagina() || CODE_GEN[qs.get('g')] || 'nena',
-        mensaje: qs.get('m') || '',
+        mensaje: qs.get('sm') ? '' : (qs.get('m') || DEFAULT_MSG),
         codigo: qs.get('c') || '',
         fecha: FECHA_EVENTO,
         hora: HORA_EVENTO,
@@ -219,14 +273,16 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   function pageHTML(data, opts) {
     opts = opts || {};
     var t = getPalette(data.genero);
-    var mensaje = (data.mensaje || '').trim() || DEFAULT_MSG;
+    // data.mensaje === '' es 'sin mensaje'; undefined/null cae en el sugerido.
+    var mensaje = (data.mensaje == null ? DEFAULT_MSG : data.mensaje).trim();
     return (
       '<div class="page' + (opts.cls ? ' ' + opts.cls : '') + '"' + (opts.id ? ' id="' + opts.id + '"' : '') + ' style="background:' + t.bg + ';color:' + t.ink + ';border:1px solid ' + t.accent + '55;">' +
       '<div class="corner tl">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner tr">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner bl">' + cornerFlourish(t.accentDeep) + '</div>' +
       '<div class="corner br">' + cornerFlourish(t.accentDeep) + '</div>' +
-      '<img class="mono" src="/mono.webp" alt=""/>' +
+      '<span class="mono-wrap" aria-hidden="true"><img class="mono" src="/mono.webp" alt=""/>' +
+      '<span class="mono-shine"><i></i></span></span>' +
       '<div class="school"><img src="/logo.png" alt=""/><span style="color:' + t.accentDeep + '">' + esc(SCHOOL_NAME) + '</span></div>' +
       '<div class="church-banner"><img src="/church.jpg" alt=""/></div>' +
       '<img class="parroquia-logo" src="/parroquia-logo.png" alt=""/>' +
@@ -234,7 +290,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<h2 class="font-display">' + (esc(data.nombre) || 'Nombre del niño/a') + '</h2>' +
       '<div class="rule"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="' + t.accent + '"/></svg></div>' +
       '<div class="spacer spacer-top"></div>' +
-      '<p class="msg font-display">' + esc(mensaje) + '</p>' +
+      (mensaje ? '<p class="msg font-display">' + esc(mensaje) + '</p>' : '') +
       '<div class="divider-motif">' + motifSvg('cruz', t.accent, t.accentDeep, 30) + '</div>' +
       '<div class="spacer"></div>' +
       '<div class="when"><span>' + (formatFechaEs(data.fecha) || 'Fecha a confirmar') + '</span>' +
@@ -313,6 +369,8 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   }
 
   function render() {
+    // Fuera de la tarjeta no hay boton para volver a activarla: se corta.
+    if (state.view !== 'success' && state.view !== 'invite') detenerMusica();
     if (state.view === 'intro') renderIntro();
     else if (state.view === 'form' || state.view === 'saving') renderForm();
     else if (state.view === 'success') renderSuccess();
@@ -387,7 +445,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '</div></div>' +
       field('Tu nombre y apellido *', '<input required id="f-nombre" placeholder="Ej: Valentina Gómez" value="' + esc(f.nombre) + '"/>') +
       '<p class="note">📅 ' + formatFechaEs(FECHA_EVENTO) + ' · ' + formatHora(HORA_EVENTO) + '<br>⛪ ' + esc(PARROQUIA_EVENTO) + '<br>📍 ' + esc(DIRECCION_EVENTO) + '</p>' +
-      field('Mensaje personalizado', '<textarea id="f-mensaje" rows="3" placeholder="' + esc(DEFAULT_MSG) + '">' + esc(f.mensaje) + '</textarea>') +
+      mensajeFieldHTML(f) +
       '<div id="form-error" style="color:#a33;font-size:0.85rem"></div>' +
       '<button type="submit" class="btn" id="submit-btn"' + (canSubmit() ? '' : ' disabled') + '>' +
       (state.view === 'saving' ? 'Guardando…' : 'Crear mi invitación') + '</button>' +
@@ -397,22 +455,51 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     );
     wireBook('preview-book');
 
-    var ids = ['nombre', 'mensaje'];
-    ids.forEach(function (id) {
-      var el = document.getElementById('f-' + id);
-      el.addEventListener('input', function () {
-        state.form[id] = el.value;
-        document.getElementById('submit-btn').disabled = !canSubmit();
-        var wasOpen = !!document.getElementById('preview-book') && document.getElementById('preview-book').classList.contains('open');
-        var wrap = document.querySelector('.form-grid > div:last-child');
-        wrap.innerHTML = '<p class="label preview-label">Vista previa · tocá la tapa para abrirla</p><div>' + bookHTML('preview-book', state.form) + '</div>';
-        if (wasOpen) {
-          document.getElementById('preview-book').classList.add('open');
-          document.getElementById('preview-book-wrap').classList.add('is-open');
-        }
-        wireBook('preview-book');
-      });
+    // La vista previa se rearma sola con cada tecla y conserva si la tarjeta
+    // estaba abierta, para que no se cierre mientras se escribe.
+    function refrescarPreview() {
+      document.getElementById('submit-btn').disabled = !canSubmit();
+      var libro = document.getElementById('preview-book');
+      var abierto = !!libro && libro.classList.contains('open');
+      var wrap = document.querySelector('.form-grid > div:last-child');
+      wrap.innerHTML = '<p class="label preview-label">Vista previa · tocá la tapa para abrirla</p><div>' + bookHTML('preview-book', state.form) + '</div>';
+      if (abierto) {
+        document.getElementById('preview-book').classList.add('open');
+        document.getElementById('preview-book-wrap').classList.add('is-open');
+      }
+      wireBook('preview-book');
+    }
+
+    function pintarContador() {
+      var cont = document.getElementById('msg-count');
+      if (cont) cont.textContent = (state.form.mensaje || '').length + '/' + MSG_MAX;
+      var rest = document.getElementById('msg-restore');
+      if (rest) rest.disabled = (state.form.mensaje || '').trim() === DEFAULT_MSG;
+    }
+
+    document.getElementById('f-nombre').addEventListener('input', function () {
+      state.form.nombre = this.value;
+      refrescarPreview();
     });
+
+    var ta = document.getElementById('f-mensaje');
+    ta.addEventListener('input', function () {
+      state.form.mensaje = ta.value;
+      pintarContador();
+      refrescarPreview();
+    });
+
+    // Atajos para volver al texto sugerido o dejar la tarjeta sin mensaje.
+    function ponerMensaje(texto, foco) {
+      ta.value = texto;
+      state.form.mensaje = texto;
+      pintarContador();
+      refrescarPreview();
+      if (foco) { ta.focus(); ta.setSelectionRange(texto.length, texto.length); }
+    }
+    document.getElementById('msg-restore').addEventListener('click', function () { ponerMensaje(DEFAULT_MSG, false); });
+    document.getElementById('msg-clear').addEventListener('click', function () { ponerMensaje('', true); });
+
     Array.prototype.forEach.call(document.querySelectorAll('.gender-btn'), function (btn) {
       btn.addEventListener('click', function () {
         state.form.genero = btn.getAttribute('data-genero');
@@ -423,6 +510,28 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       e.preventDefault();
       submitForm();
     });
+  }
+
+  // Mensaje personalizado: viene con el texto sugerido cargado (no como
+  // placeholder) para poder editarlo, agregarle o borrarlo. Vaciarlo del todo
+  // es valido: la tarjeta sale sin el parrafo.
+  var MSG_MAX = 420;
+  function mensajeFieldHTML(f) {
+    var val = f.mensaje == null ? DEFAULT_MSG : f.mensaje;
+    var esSugerido = val.trim() === DEFAULT_MSG;
+    return '<div class="field msg-field">' +
+      '<div class="msg-head">' +
+      '<span class="label">Mensaje personalizado</span>' +
+      '<span class="msg-count" id="msg-count">' + val.length + '/' + MSG_MAX + '</span>' +
+      '</div>' +
+      '<textarea id="f-mensaje" rows="6" maxlength="' + MSG_MAX + '" ' +
+      'placeholder="Escribí acá tu mensaje…">' + esc(val) + '</textarea>' +
+      '<div class="msg-tools">' +
+      '<button type="button" class="chip" id="msg-restore"' + (esSugerido ? ' disabled' : '') + '>↺ Texto sugerido</button>' +
+      '<button type="button" class="chip" id="msg-clear">✕ Vaciar</button>' +
+      '</div>' +
+      '<p class="hint">Editálo libremente: agregá, borrá o escribí el tuyo. Si lo dejás vacío, la tarjeta sale sin mensaje.</p>' +
+      '</div>';
   }
 
   function field(label, inputHtml) {
@@ -559,9 +668,9 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
       '</div>'
     );
-    // El reproductor aparece recien cuando se abre la tarjeta
+    // La cancion arranca apenas se ve la tapa, sin esperar a que la abran.
+    arrancarMusica('song-slot');
     wireBook('success-book', function () {
-      iniciarMusica('song-slot');
       escribirMensaje('success-book');
     });
 
@@ -704,10 +813,12 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       book.classList.add('open');
       document.getElementById('invite-book-wrap').classList.add('is-open');
     }
+    // Idem: suena desde que se ve la tapa. Si el navegador frena el
+    // autoplay, el toque que abre la tarjeta ya alcanza para largarla.
+    arrancarMusica('song-slot', t.accentDeep);
     wireBook('invite-book', function () {
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
-      iniciarMusica('song-slot', t.accentDeep);
       escribirMensaje('invite-book');
     });
 

@@ -105,19 +105,37 @@ body { margin: 0; }
   }
   textarea { resize: vertical; }
 
-  .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  /* Un 10% mas grande que antes en todas sus medidas. En pantalla ancha el
+     alto lo da la columna del formulario, que tambien crecio un 10%. */
+  .gender-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
   .gender-btn {
-    border: 1px solid var(--line); border-radius: 16px; padding: 12px; cursor: pointer;
-    background: var(--surface); display: flex; flex-direction: column; align-items: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 18px; padding: 13px; cursor: pointer;
+    background: var(--surface); display: flex; flex-direction: column; align-items: center; gap: 9px;
     transition: border-color 0.15s, transform 0.15s;
   }
   .gender-btn.active { border: 2px solid var(--gold-deep); transform: translateY(-2px); }
-  .gender-btn img { width: 100%; aspect-ratio: 1/1; border-radius: 10px; object-fit: cover; object-position: top center; }
-  .gender-btn span { font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+  .gender-btn img { width: 100%; aspect-ratio: 1/1; border-radius: 11px; object-fit: cover; object-position: top center; }
+  .gender-btn span { font-size: 0.94rem; font-weight: 700; color: var(--ink); }
+
+  /* ---- Mensaje personalizado ---- */
+  .msg-field { display: flex; flex-direction: column; gap: 6px; }
+  .msg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .msg-count { font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); opacity: 0.7; font-variant-numeric: tabular-nums; }
+  .msg-field textarea { line-height: 1.55; min-height: 132px; }
+  .msg-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft);
+    border-radius: 999px; padding: 7px 14px; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-size: 0.74rem; font-weight: 700;
+    transition: border-color 0.15s, color 0.15s, transform 0.15s;
+  }
+  .chip:hover:not(:disabled) { border-color: var(--gold-deep); color: var(--gold-deep); transform: translateY(-1px); }
+  .chip:disabled { opacity: 0.4; cursor: default; }
+  .hint { margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--ink-soft); opacity: 0.85; }
 
   .form-grid { display: grid; gap: 28px; }
   @media (min-width: 860px) {
-    .form-grid { grid-template-columns: minmax(0, 380px) minmax(0, 1fr); align-items: start; }
+    .form-grid { grid-template-columns: minmax(0, 418px) minmax(0, 1fr); align-items: start; }
   }
 
   /* ---- Cover (tapa) ---- */
@@ -175,11 +193,56 @@ body { margin: 0; }
 
   /* Mitad adentro y mitad afuera del borde: la sombra propia es la que lo
      hace leer como pegado sobre la tarjeta y no como parte del dibujo. */
-  .page .mono {
-    position: absolute; left: -13%; top: 2%; width: 30%; height: auto; z-index: 4;
-    transform: rotate(-5deg); pointer-events: none;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.3)) drop-shadow(0 2px 3px rgba(0,0,0,0.18));
+  /* 33% y -14.3%: un 10% mas grande que antes, con el mismo encastre sobre
+     el borde (crecen juntos el ancho y el corrimiento hacia afuera). */
+  .page .mono-wrap {
+    position: absolute; left: -14.3%; top: 2%; width: 33%; z-index: 4;
+    pointer-events: none; transform: rotate(-5deg);
+    animation: monoFlota 6s ease-in-out infinite;
   }
+  .page .mono-wrap .mono {
+    display: block; width: 100%; height: auto;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.3)) drop-shadow(0 2px 3px rgba(0,0,0,0.18));
+    animation: monoResplandor 6s ease-in-out infinite;
+  }
+  /* Destello que barre el mono. La mascara recorta la luz al contorno del
+     dibujo: sin ella el brillo se veria como una franja rectangular. Si el
+     navegador no soporta mask-image, no se muestra nada. */
+  .page .mono-wrap .mono-shine { display: none; }
+  @supports ((mask-image: url(/mono.webp)) or (-webkit-mask-image: url(/mono.webp))) {
+    .page .mono-wrap .mono-shine {
+      display: block; position: absolute; inset: 0; overflow: hidden;
+      -webkit-mask-image: url(/mono.webp); mask-image: url(/mono.webp);
+      -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      mix-blend-mode: screen;
+    }
+  }
+  .page .mono-wrap .mono-shine i {
+    position: absolute; top: -40%; bottom: -40%; left: -60%; width: 42%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,251,231,0.95) 50%, rgba(255,255,255,0) 100%);
+    transform: rotate(16deg); filter: blur(3px);
+    animation: monoDestello 5s cubic-bezier(.4,0,.2,1) infinite;
+  }
+  @keyframes monoFlota {
+    0%, 100% { transform: rotate(-5deg) translateY(0); }
+    50% { transform: rotate(-3.4deg) translateY(-1.6%); }
+  }
+  @keyframes monoResplandor {
+    0%, 100% { filter: drop-shadow(0 10px 16px rgba(0,0,0,0.3)) drop-shadow(0 2px 3px rgba(0,0,0,0.18)); }
+    50% { filter: drop-shadow(0 12px 20px rgba(0,0,0,0.32)) drop-shadow(0 0 13px rgba(255,234,168,0.9)) drop-shadow(0 2px 3px rgba(0,0,0,0.18)); }
+  }
+  /* Arranca fuera del dibujo, cruza y se queda esperando el proximo ciclo. */
+  @keyframes monoDestello {
+    0% { left: -60%; }
+    38% { left: 118%; }
+    100% { left: 118%; }
+  }
+  /* En la captura para JPG/PDF nada se mueve: el destello saldria congelado
+     a mitad de camino. */
+  .page.para-captura .mono-wrap,
+  .page.para-captura .mono-wrap .mono { animation: none; }
+  .page.para-captura .mono-shine { display: none; }
 
   /* El ancho tope deja el nombre del colegio siempre a la derecha del mono. */
   .page .school { display: flex; flex-direction: column; align-items: center; gap: 0.5%; margin-bottom: 1.4%; flex: none; max-width: 74%; }
@@ -413,7 +476,7 @@ body { margin: 0; }
   /* El hueco por donde asoma el mono se descuenta de la cara de adentro, no
      del marco: asi la tapa cerrada sigue usando todo el ancho y el conjunto
      abierto (tarjeta + mono) ocupa exactamente lo mismo que la tapa. */
-  .book .face.back { transform: rotateY(180deg); padding-left: 12%; }
+  .book .face.back { transform: rotateY(180deg); padding-left: 13.2%; }
   .book.open .face.front { transform: rotateY(-172deg); }
   .book.open .face.front::after { opacity: 1; }
   .book.open .face.back { transform: rotateY(0deg); z-index: 2; }
@@ -590,9 +653,9 @@ body { margin: 0; }
     .intro .btn { padding: 15px 30px; font-size: 1rem; width: 100%; }
 
     .btn { padding: 14px 20px; font-size: 0.95rem; }
-    .gender-grid { gap: 9px; }
-    .gender-btn { padding: 9px; border-radius: 13px; }
-    .gender-btn span { font-size: 0.78rem; }
+    .gender-grid { gap: 10px; }
+    .gender-btn { padding: 10px; border-radius: 14px; }
+    .gender-btn span { font-size: 0.86rem; }
     .note { font-size: 0.72rem; line-height: 1.5; }
 
     .success-wrap { gap: 18px; }
@@ -607,7 +670,7 @@ body { margin: 0; }
   @media (max-width: 360px) {
     header.top h1 { font-size: 1.05rem; }
     .intro h2 { font-size: 1.42rem; }
-    .gender-btn span { font-size: 0.72rem; }
+    .gender-btn span { font-size: 0.79rem; }
   }
 
   /* Que nada empuje la pagina a lo ancho */
@@ -622,6 +685,8 @@ body { margin: 0; }
     .book:not(.open) .cover-wrap::after, .book.open .page .rule svg,
     .book.open .page .divider-motif, .book.open .page .when { animation: none !important; }
     .book .face { transition-duration: 0.01ms !important; }
+    .page .mono-wrap, .page .mono-wrap .mono, .page .mono-shine i { animation: none !important; }
+    .page .mono-shine { display: none !important; }
   }
 
   .success-wrap { position: relative; }
@@ -675,7 +740,7 @@ body { margin: 0; }
 
   /* ---- Cada elemento tactil, con area suficiente ---- */
   @media (pointer: coarse) {
-    .btn, .gender-btn, .linklike, .song-mute { min-height: 44px; }
+    .btn, .gender-btn, .linklike, .song-mute, .chip { min-height: 44px; }
   }
 
   /* ---- Lista de tarjetas creadas (/?lista=1) ---- */
