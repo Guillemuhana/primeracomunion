@@ -193,10 +193,11 @@ body { margin: 0; }
 
   /* Mitad adentro y mitad afuera del borde: la sombra propia es la que lo
      hace leer como pegado sobre la tarjeta y no como parte del dibujo. */
-  /* 36.3% y -15.7%: otro 10% encima del anterior, con el mismo encastre
-     sobre el borde (crecen juntos el ancho y el corrimiento hacia afuera). */
+  /* 38.1% y -16.5%: un 5% mas encima del anterior. El ancho y el
+     corrimiento hacia afuera crecen juntos, asi el mono se agranda pero
+     sigue asomando lo mismo sobre el borde de la tarjeta. */
   .page .mono-wrap {
-    position: absolute; left: -15.7%; top: 2%; width: 36.3%; z-index: 4;
+    position: absolute; left: -16.5%; top: 2%; width: 38.1%; z-index: 4;
     pointer-events: none; transform: rotate(-5deg);
     animation: monoFlota 6s ease-in-out infinite;
   }
@@ -261,11 +262,11 @@ body { margin: 0; }
   .page .parroquia-logo { width: clamp(110px, 30cqw, 175px); height: auto; margin: 0 0 2%; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
 
   .page .kicker {
-    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.92rem, 4.4cqw, 1.48rem); font-weight: 600;
-    letter-spacing: 0.08em; margin: 0 0 0.1%; display: flex; align-items: center; justify-content: center; gap: 2.3cqw;
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.02rem, 4.9cqw, 1.66rem); font-weight: 600;
+    letter-spacing: 0.07em; margin: 0 0 0.1%; display: flex; align-items: center; justify-content: center; gap: 2.2cqw;
   }
   /* Las rayitas de los costados acompanan al texto mas grande. */
-  .page .kicker i { display: block; width: clamp(14px, 5.6cqw, 30px); height: 1px; opacity: 0.7; font-style: normal; }
+  .page .kicker i { display: block; width: clamp(15px, 6cqw, 33px); height: 1px; opacity: 0.7; font-style: normal; }
   .page h2 {
     font-size: clamp(1.24rem, 9cqw, 2.9rem); font-weight: 600; margin: 0.5% 0 0.8%; line-height: 1.02;
     text-shadow: 0 1px 2px rgba(255,255,255,0.6);
@@ -477,7 +478,7 @@ body { margin: 0; }
   /* El hueco por donde asoma el mono se descuenta de la cara de adentro, no
      del marco: asi la tapa cerrada sigue usando todo el ancho y el conjunto
      abierto (tarjeta + mono) ocupa exactamente lo mismo que la tapa. */
-  .book .face.back { transform: rotateY(180deg); padding-left: 14.5%; }
+  .book .face.back { transform: rotateY(180deg); padding-left: 15.2%; }
   .book.open .face.front { transform: rotateY(-172deg); }
   .book.open .face.front::after { opacity: 1; }
   .book.open .face.back { transform: rotateY(0deg); z-index: 2; }
