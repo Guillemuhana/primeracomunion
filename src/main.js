@@ -399,6 +399,27 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     }, 34);
   }
 
+  // La caja del libro sale de la proporcion de la tapa, pero la tarjeta de
+  // adentro mide lo que midan el nombre y el mensaje, y puede pasarse. Como
+  // las dos caras van en position absolute, ese sobrante no empuja nada: se
+  // dibuja encima de lo que venga abajo, que en la pantalla final son los
+  // botones. Abierta, entonces, la caja toma el alto de la tarjeta.
+  // En la pantalla de la invitacion no: ahi el alto lo fija la pantalla.
+  function ajustarAltoLibro(book) {
+    if (!book || book.closest('.invite-screen')) return;
+    book.style.height = '';
+    if (!book.classList.contains('open')) return;
+    var page = book.querySelector('.face.back .page');
+    if (!page) return;
+    // Un par de pasadas: al agrandar la caja la tarjeta se reacomoda y puede
+    // pedir unos pixeles mas. Converge en dos, la tercera es por las dudas.
+    for (var i = 0; i < 3; i++) {
+      var alto = page.offsetHeight;
+      if (alto <= book.offsetHeight) break;
+      book.style.height = alto + 'px';
+    }
+  }
+
   function wireBook(id, onOpen) {
     var book = document.getElementById(id);
     var wrap = document.getElementById(id + '-wrap');
@@ -408,6 +429,12 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       book.classList.toggle('open');
       if (wrap) wrap.classList.toggle('is-open', willOpen);
       if (willOpen && onOpen) onOpen();
+      ajustarAltoLibro(book);
+      // Si las tipografias todavia no estaban, el texto cambia de alto al
+      // llegar y hay que volver a medir.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () { ajustarAltoLibro(book); });
+      }
     });
   }
 
@@ -566,6 +593,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
         document.getElementById('preview-book-wrap').classList.add('is-open');
       }
       wireBook('preview-book');
+      ajustarAltoLibro(document.getElementById('preview-book'));
     }
 
     function pintarContador() {
