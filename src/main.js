@@ -84,11 +84,11 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
 
   // ---------- State ----------
   // ---------- Musica ----------
-  // Suena sola apenas se ve la tapa de la tarjeta, en loop. Casi ningun
-  // navegador deja arrancar audio sin un gesto previo del visitante: se
-  // intenta igual de entrada y, si lo bloquean, queda armado para largar en
-  // el primer toque / scroll / tecla que haya. Si el archivo no esta, no se
-  // muestra nada.
+  // Arranca con el toque que abre la tarjeta, en loop. Ese toque es ademas
+  // justo el gesto que los navegadores piden para dejar sonar audio, asi que
+  // en la practica no la frena nadie. Igual queda la red: si la frenaran, se
+  // arma para largar en el primer toque / scroll / tecla que venga despues.
+  // Si el archivo no esta, no se muestra nada.
   var AUDIO_SRC = '/cancion.mp3';
   var audioEl = null;
   var musicaSlot = '';
@@ -148,7 +148,8 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
     GESTOS.forEach(function (ev) { document.addEventListener(ev, largar, true); });
   }
 
-  // Llamar al renderizar la pantalla que muestra la tapa.
+  // Llamar desde el toque que abre la tarjeta, no al renderizar la pantalla:
+  // adentro del gesto el play() sale derecho.
   function arrancarMusica(slotId, color) {
     musicaSlot = slotId;
     musicaColor = color || '';
@@ -796,9 +797,8 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       '<button class="linklike" id="again-btn">Crear otra tarjeta</button>' +
       '</div>'
     );
-    // La cancion arranca apenas se ve la tapa, sin esperar a que la abran.
-    arrancarMusica('song-slot');
     wireBook('success-book', function () {
+      arrancarMusica('song-slot');
       escribirMensaje('success-book');
     });
 
@@ -917,12 +917,10 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
       book.classList.add('open');
       document.getElementById('invite-book-wrap').classList.add('is-open');
     }
-    // Idem: suena desde que se ve la tapa. Si el navegador frena el
-    // autoplay, el toque que abre la tarjeta ya alcanza para largarla.
-    arrancarMusica('song-slot', t.accentDeep);
     wireBook('invite-book', function () {
       state.opened = true;
       document.querySelector('.invite-screen').classList.add('opened');
+      arrancarMusica('song-slot', t.accentDeep);
       escribirMensaje('invite-book');
     });
 
