@@ -484,6 +484,19 @@ body { margin: 0; }
     .mono-deco { --mx: 34%; width: clamp(140px, 20vw, 182px); opacity: 0.6; }
   }
 
+  /* En la PC hay lugar: el mono va al doble y asoma mas adentro. El 52vh es
+     el tope que importa: el dibujo es 1.63 veces mas alto que ancho, asi que
+     al doble (480px) mide 784 de alto y no entra en una pantalla de 780. Con
+     el tope se agranda todo lo que el alto permita y nunca sale cortado.
+     Centrado en 50%, que es lo unico que reparte bien el sobrante. */
+  @media (min-width: 1280px) {
+    .mono-deco {
+      --mx: 12%;
+      top: 50%;
+      width: min(480px, 34vw, 52vh);
+    }
+  }
+
   /* ---- Home: la pantalla se arma en cascada ---- */
   .home-intro > * { animation: fadeInUp 0.75s ease both; }
   .home-intro > *:nth-child(1) { animation-delay: 0.05s; }
