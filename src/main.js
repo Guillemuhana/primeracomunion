@@ -298,8 +298,7 @@ import { toJpeg, getFontEmbedCSS } from 'html-to-image';
   // quedan 186px de alto. Cada tramo toma la escala mas grande que entra en
   // esos 186, redondeada para abajo.
   function escalaMensaje(largo) {
-    if (largo <= 190) return 1;
-    if (largo <= 230) return 0.94;
+    if (largo <= 230) return 1;
     if (largo <= 255) return 0.88;
     if (largo <= 290) return 0.82;
     if (largo <= 380) return 0.76;
